@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* --- Surfaces (warm-neutral gray, not blue-tinted) --- */
+  --bg-primary:    #f9fafb;
+  --bg-secondary:  #f3f4f6;
+  --bg-card:       #ffffff;
+  --bg-card-hover: #f9fafb;
+  --bg-elevated:   #f9fafb;
+  --bg-sidebar:    #111827;
+  --bg-navbar:     #ffffff;
+  --bg-hover:      #f3f4f6;
+
+  /* --- Borders --- */
+  --border:        #e5e7eb;
+  --border-light:  #f3f4f6;
+
+  /* --- Text --- */
+  --text-primary:   #111827;
+  --text-secondary: #374151;
+  --text-muted:     #6b7280;
+
+  /* --- Accent: one authoritative blue --- */
+  --accent:       #2563eb;
+  --accent-light: #3b82f6;
+  --accent-dim:   rgba(37, 99, 235, .07);
+  --accent-glow:  rgba(37, 99, 235, .14);
+
+  /* --- Secondary (replaces plum — slate blue, not clashing) --- */
+  --plum:       #1e40af;
+  --plum-dim:   rgba(30, 64, 175, .07);
+  --plum-light: #3b82f6;
+
+  /* --- Status --- */
+  --success:       #059669;
+  --success-dim:   rgba(5, 150, 105, .09);
+  --success-light: #d1fae5;
+
+  --warning:       #d97706;
+  --warning-dim:   rgba(217, 119, 6, .09);
+  --warning-light: #fef3c7;
+
+  --danger:       #dc2626;
+  --danger-dim:   rgba(220, 38, 38, .07);
+  --danger-light: #fee2e2;
+  --danger-glow:  rgba(220, 38, 38, .16);
+
+  --purple:     #7c3aed;
+  --purple-dim: rgba(124, 58, 237, .07);
+
+  /* --- Layout --- */
+  --sidebar-width: 256px;
+  --navbar-height: 68px;
+
+  /* --- Radii (tighter = more enterprise) --- */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius:      8px;
+  --radius-lg:   10px;
+  --radius-xl:   14px;
+  --radius-pill: 50px;
+
+  /* --- Shadows (subtle, neutral) --- */
+  --shadow-sm:   0 1px 2px rgba(0, 0, 0, .05);
+  --shadow-md:   0 2px 8px rgba(0, 0, 0, .08);
+  --shadow:      0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .04);
+  --shadow-lg:   0 4px 16px rgba(0, 0, 0, .10), 0 2px 4px rgba(0, 0, 0, .05);
+  --shadow-card: 0 0 0 1px rgba(0, 0, 0, .06), 0 1px 4px rgba(0, 0, 0, .06);
+
+  --font-primary:   'Inter', system-ui, -apple-system, sans-serif;
+  --font-secondary: 'Inter', system-ui, -apple-system, sans-serif;
+  --transition:     all 0.15s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
