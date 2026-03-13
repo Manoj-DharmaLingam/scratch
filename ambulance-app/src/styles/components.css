@@ -1,7 +1,7 @@
 /* ─── Card Base ───────────────────────────────────────────────── */
 .card {
   background: var(--white);
-  border: 1px solid var(--border-soft);
+  border: 1.5px solid var(--border-soft);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   transition: box-shadow var(--t-mid), transform var(--t-mid), border-color var(--t-mid);
@@ -9,6 +9,7 @@
 
 .card:hover {
   box-shadow: var(--shadow-card-hover);
+  border-color: var(--purple-mid);
 }
 
 /* ─── Location Card ───────────────────────────────────────────── */
@@ -35,7 +36,7 @@
 
 .location-label {
   font-size: 0.65rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-muted);
@@ -44,7 +45,7 @@
 
 .location-coords {
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--purple-accent);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -66,9 +67,9 @@
 }
 
 .form-title {
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-dark);
   display: flex;
   align-items: center;
@@ -89,7 +90,7 @@
 }
 
 .form-divider {
-  height: 1px;
+  height: 1.5px;
   background: var(--border-soft);
   margin: 0.1rem 0;
 }
@@ -98,7 +99,7 @@
 
 .form-label {
   font-size: 0.71rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-mid);
@@ -109,12 +110,12 @@
 
 .form-control {
   width: 100%;
-  padding: 10px 14px;
-  background: var(--cream);
+  padding: 11px 14px;
+  background: var(--blush);
   border: 1.5px solid var(--border-soft);
   border-radius: var(--radius-md);
   color: var(--text-dark);
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.88rem;
   font-weight: 400;
   transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
@@ -128,21 +129,21 @@
 .form-control:focus {
   border-color: var(--purple-accent);
   background: var(--white);
-  box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.12);
+  box-shadow: 0 0 0 3px var(--purple-light);
 }
 
 .form-control.error {
   border-color: var(--danger);
-  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.10);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10);
 }
 
 select.form-control {
   cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a09590' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237aada9' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 36px;
-  background-color: var(--cream);
+  background-color: var(--blush);
 }
 
 select.form-control option { background: #fff; color: var(--text-dark); }
@@ -168,11 +169,11 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   padding: 10px 8px;
   border-radius: var(--radius-md);
   border: 1.5px solid var(--border-soft);
-  background: var(--cream);
+  background: var(--blush);
   color: var(--text-mid);
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all var(--t-fast);
   display: flex;
@@ -184,7 +185,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 
 .severity-btn:hover {
   border-color: var(--peach);
-  background: var(--blush);
+  background: var(--blush-mid);
   color: var(--text-dark);
 }
 
@@ -221,9 +222,9 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   padding: 12px 22px;
   border-radius: var(--radius-pill);
   border: none;
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.87rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -231,21 +232,21 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   gap: 8px;
   transition: all var(--t-fast);
   width: 100%;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
 }
 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-primary {
-  background: var(--purple-accent);
+  background: linear-gradient(135deg, var(--purple-accent), #1aaa9d);
   color: #fff;
   box-shadow: var(--shadow-btn);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #0842a0;
+  background: linear-gradient(135deg, #1aaa9d, #148a84);
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(11, 87, 208, 0.35);
+  box-shadow: 0 6px 20px rgba(46,196,182,0.40);
 }
 
 .btn-primary:active:not(:disabled) { transform: translateY(0); }
@@ -253,11 +254,11 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .btn-danger {
   background: var(--danger);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(179, 38, 30, 0.25);
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.25);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #8c1d18;
+  background: #dc2626;
   transform: translateY(-1px);
 }
 
@@ -281,7 +282,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: var(--cream);
+  background: var(--blush);
   border-color: var(--peach);
   color: var(--text-dark);
 }
@@ -307,13 +308,13 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .hospital-card.recommended {
   border-color: var(--purple-accent);
   background: var(--purple-light);
-  box-shadow: 0 2px 12px rgba(11, 87, 208, 0.12);
+  box-shadow: 0 2px 16px rgba(46,196,182,0.14);
 }
 
 .hospital-card.selected {
   border-color: var(--success);
   background: var(--success-bg);
-  box-shadow: 0 2px 10px rgba(20, 108, 46, 0.12);
+  box-shadow: 0 2px 12px rgba(16,185,129,0.12);
 }
 
 .hospital-card__header {
@@ -325,9 +326,9 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .hospital-card__name {
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 0.98rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-dark);
   line-height: 1.3;
 }
@@ -335,7 +336,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 /* ─── Badges ──────────────────────────────────────────────────── */
 .badge {
   font-size: 0.6rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 3px 10px;
@@ -367,7 +368,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 
 .stat-label {
   font-size: 0.62rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -392,7 +393,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   align-items: center;
   gap: 5px;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .specialty-match.matched   { color: var(--success); }
@@ -410,13 +411,13 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .score-bar__fill {
   height: 100%;
   border-radius: 3px;
-  background: var(--purple-accent);
+  background: linear-gradient(90deg, var(--purple-accent), #1aaa9d);
   transition: width 0.7s ease;
 }
 
 /* ─── Recommendation Banner ───────────────────────────────────── */
 .rec-banner {
-  background: var(--purple-light);
+  background: linear-gradient(135deg, var(--purple-light), rgba(46,196,182,0.05));
   border: 1.5px solid var(--purple-mid);
   border-radius: var(--radius-lg);
   padding: 1.1rem 1.25rem;
@@ -429,21 +430,21 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .rec-banner__icon {
   width: 46px;
   height: 46px;
-  background: var(--purple-accent);
+  background: linear-gradient(135deg, var(--purple-accent), #1aaa9d);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(11, 87, 208, 0.20);
+  box-shadow: 0 3px 12px rgba(46,196,182,0.28);
 }
 
 .rec-banner__info { flex: 1; min-width: 0; }
 
 .rec-banner__label {
   font-size: 0.63rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--purple-accent);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -451,9 +452,9 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .rec-banner__name {
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-dark);
   white-space: nowrap;
   overflow: hidden;
@@ -481,9 +482,9 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .hospital-list__title {
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-dark);
   display: flex;
   align-items: center;
@@ -521,7 +522,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: var(--cream);
+  background: var(--blush);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -529,9 +530,9 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .empty-state__title {
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-dark);
 }
 
@@ -549,7 +550,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   overflow: hidden;
   border: 1.5px solid var(--border-soft);
   position: relative;
-  background: var(--cream);
+  background: var(--blush);
   box-shadow: var(--shadow-card);
 }
 
@@ -573,13 +574,14 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .error-banner {
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(179, 38, 30, 0.22);
+  border: 1.5px solid rgba(239, 68, 68, 0.22);
   background: var(--danger-bg);
   color: var(--danger);
   font-size: 0.8rem;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 500;
 }
 
 /* ─── Skeleton Cards ──────────────────────────────────────────── */
@@ -598,5 +600,169 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   border-radius: var(--radius-pill);
   padding: 4px 12px;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
 }
+
+/* ─── Auth Page (Ambulance Login/Signup) ──────────────────────── */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--blush) 0%, var(--blush-mid) 100%);
+  padding: 32px 16px;
+}
+
+.auth-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card-hover);
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 520px;
+  border: 1.5px solid var(--border-soft);
+}
+
+.auth-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.auth-logo-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--purple-accent), #1aaa9d);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(46,196,182,0.28);
+  color: #fff;
+}
+
+.auth-heading {
+  text-align: center;
+  font-size: 1.65rem;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+}
+
+.auth-sub {
+  text-align: center;
+  color: var(--text-light);
+  margin: 0 0 24px;
+  font-size: 0.9rem;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--blush);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 24px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.auth-tab.active {
+  background: var(--white);
+  color: var(--purple-accent);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  font-weight: 700;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .auth-two-col { grid-template-columns: 1fr; }
+  .auth-card { padding: 32px 24px; }
+}
+
+.auth-submit-btn {
+  padding: 13px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--purple-accent), #1aaa9d);
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(46,196,182,0.30);
+  margin-top: 4px;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(46,196,182,0.40);
+}
+
+.auth-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.auth-gps-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.auth-gps-btn {
+  padding: 11px 14px;
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--blush);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.auth-gps-btn:hover:not(:disabled) {
+  background: var(--purple-light);
+  border-color: var(--purple-accent);
+  color: var(--purple-accent);
+}
+
+.auth-gps-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.auth-location-saved {
+  font-size: 0.75rem;
+  color: var(--success);
+  font-weight: 600;
+  margin-top: -6px;
+}
+

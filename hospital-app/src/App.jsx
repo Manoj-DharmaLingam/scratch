@@ -55,34 +55,41 @@ function Navbar({ hospitalName, onLogout, onToggleView, viewMode }) {
     <nav className="topnav">
       <div className="topnav-brand">
         <div className="topnav-icon">
-          <Building2 size={20} color="#fff" strokeWidth={2} />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.8" strokeLinecap="round">
+            <path d="M12 3v18M3 12h18" />
+          </svg>
         </div>
         <div>
-          <div className="topnav-title">ICU Command</div>
+          <div className="topnav-title">ICU Connect</div>
           {hospitalName && <div className="topnav-sub">{hospitalName}</div>}
         </div>
       </div>
 
-      <div className="topnav-tabs">
+      <div className="topnav-links">
         <button
-          className={`topnav-tab ${viewMode === 'public' ? 'topnav-tab-active' : ''}`}
+          className={`topnav-link ${viewMode === 'public' ? 'topnav-link-active' : ''}`}
           onClick={() => onToggleView('public')}
         >
-          Public View
+          Hospitals
         </button>
         <button
-          className={`topnav-tab ${viewMode === 'hospital' ? 'topnav-tab-active' : ''}`}
+          className={`topnav-link ${viewMode === 'hospital' ? 'topnav-link-active' : ''}`}
           onClick={() => onToggleView('hospital')}
         >
-          Hospital Portal
+          Dashboard
         </button>
       </div>
 
       <div className="topnav-right">
-        {onLogout && (
+        {onLogout ? (
           <button className="signout-btn" onClick={onLogout}>
             <LogOut size={15} />
-            Sign out
+            Sign Out
+          </button>
+        ) : (
+          <button className="signin-btn" onClick={() => onToggleView('hospital')}>
+            <Building2 size={14} />
+            Hospital Login
           </button>
         )}
       </div>
@@ -92,7 +99,7 @@ function Navbar({ hospitalName, onLogout, onToggleView, viewMode }) {
 
 // ─── Public View ─────────────────────────────────────────────────────────────
 
-function PublicView() {
+function PublicView({ onNavigate }) {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [live, setLive] = useState(false);
@@ -125,90 +132,141 @@ function PublicView() {
   }
 
   return (
-    <div className="content-wrap">
-      <div className="content-header">
-        <div>
-          <h1 className="content-title">ICU Availability</h1>
-          <p className="content-sub">Live bed status across all registered hospitals</p>
+    <div>
+      {/* ── Hero Section ─────────────────────────────────────────── */}
+      <div className="hero-section">
+        <div className="hero-left">
+          <div className="hero-badge">Live ICU Tracking</div>
+          <h1 className="hero-title">
+            Real-Time ICU<br /><span>Bed Availability</span>
+          </h1>
+          <p className="hero-sub">
+            Helping ambulances find hospitals with available ICU beds instantly.
+            Powered by real-time data and smart routing.
+          </p>
+          <div className="hero-actions">
+            <button className="hero-primary-btn" onClick={() => onNavigate('hospital')}>
+              Find ICU Now
+            </button>
+            <button className="hero-secondary-btn" onClick={() => onNavigate('hospital')}>
+              Register Hospital
+            </button>
+          </div>
         </div>
-        {live && <span className="live-pill">Live</span>}
+        <div className="hero-right">
+          <div className="hero-visual">
+            <div className="hero-visual-inner">
+              <Building2 size={72} strokeWidth={1} />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {hospitals.length === 0 ? (
-        <div className="empty-box">
-          <Building2 size={52} className="empty-box-icon" strokeWidth={1} />
-          <p className="empty-box-text">No hospitals registered yet.</p>
+      {/* ── Stat Cards ────────────────────────────────────────────── */}
+      <div className="home-stats">
+        <div className="home-stat-card">
+          <div className="home-stat-icon"><Building2 size={22} /></div>
+          <div className="home-stat-num">120+</div>
+          <div className="home-stat-lbl">Hospitals</div>
         </div>
-      ) : (
-        <div className="hosp-grid">
-          {hospitals.map((h) => {
-            const status = icuStatus(h.available_icu_beds, h.total_icu_beds);
-            const occupied = h.total_icu_beds - h.available_icu_beds;
-            const pct = h.total_icu_beds
-              ? Math.round((occupied / h.total_icu_beds) * 100)
-              : 0;
-            const fillColor =
-              pct >= 75 ? 'var(--danger)' : pct >= 50 ? 'var(--warning)' : 'var(--success)';
-
-            return (
-              <div className="hcard" key={h.id}>
-                <div className="hcard-head">
-                  <h3 className="hcard-name">{h.hospital_name}</h3>
-                  <span className={`icu-badge ${status.cls}`}>{status.label}</span>
-                </div>
-
-                <p className="hcard-addr">
-                  <MapPin size={13} strokeWidth={2} />
-                  {h.hospital_address}
-                </p>
-
-                <div className="hcard-progress">
-                  <div className="progress-track">
-                    <div
-                      className="progress-fill"
-                      style={{ width: `${pct}%`, background: fillColor }}
-                    />
-                  </div>
-                  <div className="progress-meta">
-                    <span>{pct}% occupied</span>
-                    <span>{h.available_icu_beds} / {h.total_icu_beds} free</span>
-                  </div>
-                </div>
-
-                <div className="hcard-stats">
-                  <div className="hcard-stat">
-                    <span className="hstat-val">{h.total_icu_beds}</span>
-                    <span className="hstat-lbl">Total</span>
-                  </div>
-                  <div className="hcard-stat">
-                    <span className="hstat-val" style={{ color: 'var(--success)' }}>
-                      {h.available_icu_beds}
-                    </span>
-                    <span className="hstat-lbl">Free</span>
-                  </div>
-                  <div className="hcard-stat">
-                    <span className="hstat-val" style={{ color: 'var(--plum)' }}>
-                      {occupied}
-                    </span>
-                    <span className="hstat-lbl">Occupied</span>
-                  </div>
-                </div>
-
-                {h.specialties?.length > 0 && (
-                  <div className="chip-row">
-                    {h.specialties.slice(0, 4).map((s) => (
-                      <span className="chip" key={s}>{s}</span>
-                    ))}
-                    {h.specialties.length > 4 && (
-                      <span className="chip chip-more">+{h.specialties.length - 4}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div className="home-stat-card">
+          <div className="home-stat-icon"><BedDouble size={22} /></div>
+          <div className="home-stat-num">450+</div>
+          <div className="home-stat-lbl">ICU Beds</div>
         </div>
-      )}
+        <div className="home-stat-card">
+          <div className="home-stat-icon"><Activity size={22} /></div>
+          <div className="home-stat-num">98%</div>
+          <div className="home-stat-lbl">Emergency Success</div>
+        </div>
+      </div>
+
+      {/* ── Hospital Grid ─────────────────────────────────────────── */}
+      <div className="content-wrap">
+        <div className="content-header">
+          <div>
+            <h1 className="content-title">ICU Availability</h1>
+            <p className="content-sub">Live bed status across all registered hospitals</p>
+          </div>
+          {live && <span className="live-pill">Live</span>}
+        </div>
+
+        {hospitals.length === 0 ? (
+          <div className="empty-box">
+            <Building2 size={52} className="empty-box-icon" strokeWidth={1} />
+            <p className="empty-box-text">No hospitals registered yet.</p>
+          </div>
+        ) : (
+          <div className="hosp-grid">
+            {hospitals.map((h) => {
+              const status = icuStatus(h.available_icu_beds, h.total_icu_beds);
+              const occupied = h.total_icu_beds - h.available_icu_beds;
+              const pct = h.total_icu_beds
+                ? Math.round((occupied / h.total_icu_beds) * 100)
+                : 0;
+              const fillColor =
+                pct >= 75 ? 'var(--danger)' : pct >= 50 ? 'var(--warning)' : 'var(--success)';
+
+              return (
+                <div className="hcard" key={h.id}>
+                  <div className="hcard-head">
+                    <h3 className="hcard-name">{h.hospital_name}</h3>
+                    <span className={`icu-badge ${status.cls}`}>{status.label}</span>
+                  </div>
+
+                  <p className="hcard-addr">
+                    <MapPin size={13} strokeWidth={2} />
+                    {h.hospital_address}
+                  </p>
+
+                  <div className="hcard-progress">
+                    <div className="progress-track">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${pct}%`, background: fillColor }}
+                      />
+                    </div>
+                    <div className="progress-meta">
+                      <span>{pct}% occupied</span>
+                      <span>{h.available_icu_beds} / {h.total_icu_beds} free</span>
+                    </div>
+                  </div>
+
+                  <div className="hcard-stats">
+                    <div className="hcard-stat">
+                      <span className="hstat-val">{h.total_icu_beds}</span>
+                      <span className="hstat-lbl">Total</span>
+                    </div>
+                    <div className="hcard-stat">
+                      <span className="hstat-val" style={{ color: 'var(--success)' }}>
+                        {h.available_icu_beds}
+                      </span>
+                      <span className="hstat-lbl">Free</span>
+                    </div>
+                    <div className="hcard-stat">
+                      <span className="hstat-val" style={{ color: 'var(--plum)' }}>
+                        {occupied}
+                      </span>
+                      <span className="hstat-lbl">Occupied</span>
+                    </div>
+                  </div>
+
+                  {h.specialties?.length > 0 && (
+                    <div className="chip-row">
+                      {h.specialties.slice(0, 4).map((s) => (
+                        <span className="chip" key={s}>{s}</span>
+                      ))}
+                      {h.specialties.length > 4 && (
+                        <span className="chip chip-more">+{h.specialties.length - 4}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -424,7 +482,46 @@ function HospitalDashboard({ onUnauthorized }) {
   const rest = alerts.filter((a) => a.status !== 'pending');
 
   return (
-    <div className="content-wrap">
+    <div className="dash-shell">
+
+      {/* ── Sidebar ─────────────────────────────────────────── */}
+      <aside className="dash-sidebar">
+        <div className="sidebar-brand">
+          <div className="sidebar-logo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M12 3v18M3 12h18" />
+            </svg>
+          </div>
+          <span className="sidebar-brandname">ICU Connect</span>
+        </div>
+
+        <nav className="sidebar-nav">
+          <span className="sidebar-section-label">Navigation</span>
+          <a href="#sect-overview" className="sidebar-item">
+            <Activity size={18} /><span>Dashboard</span>
+          </a>
+          <a href="#sect-beds" className="sidebar-item">
+            <BedDouble size={18} /><span>ICU Beds</span>
+          </a>
+          <a href="#sect-alerts" className="sidebar-item">
+            <Bell size={18} /><span>Emergency Requests</span>
+            {pending.length > 0 && (
+              <span className="sidebar-badge">{pending.length}</span>
+            )}
+          </a>
+          <a href="#sect-location" className="sidebar-item">
+            <MapPin size={18} /><span>Settings</span>
+          </a>
+        </nav>
+
+        <button className="sidebar-logout" onClick={onUnauthorized}>
+          <LogOut size={16} /><span>Logout</span>
+        </button>
+      </aside>
+
+      {/* ── Main Content ─────────────────────────────────────── */}
+      <main className="dash-main">
+        <div className="dash-content">
       {error && (
         <div className="error-toast" role="alert" onClick={() => setError('')}>
           <span className="toast-inner">
@@ -459,184 +556,193 @@ function HospitalDashboard({ onUnauthorized }) {
       )}
 
       {hospital && (
-        <>
-          {/* Header */}
-          <div className="dash-banner">
-            <div>
-              <div className="dash-name-row">
-                <h1 className="dash-name">{hospital.hospital_name}</h1>
-                {status && <span className={`icu-badge ${status.cls}`}>{status.label}</span>}
-              </div>
-              <p className="dash-addr">
-                <MapPin size={14} strokeWidth={2} />
-                {hospital.hospital_address}
-              </p>
-            </div>
-            <div className="dash-live">
-              <span className="live-dot" />
-              <span className="muted-text">Live</span>
-            </div>
-          </div>
-
-          {/* Stat row */}
-          <div className="stat-row">
-            <StatCard icon={BedDouble}    val={hospital.total_icu_beds}     lbl="Total Beds"     mod=""           />
-            <StatCard icon={CheckCircle2} val={hospital.available_icu_beds} lbl="Available"      mod="sc-success" />
-            <StatCard icon={XCircle}      val={occupied}                    lbl="Occupied"       mod="sc-plum"    />
-            <StatCard icon={Bell}         val={pending.length}              lbl="Pending Alerts" mod="sc-warn"    />
-          </div>
-
-          {/* Occupancy bar */}
-          <div className="panel">
-            <div className="panel-head">
-              <h2 className="panel-title">ICU Occupancy</h2>
-              <span className="pct-chip">{pct}%</span>
-            </div>
-            <div className="occ-bar">
-              <div className="occ-fill" style={{ width: `${pct}%`, background: fillColor }} />
-            </div>
-            <div className="occ-labels">
-              <span>{hospital.available_icu_beds} available</span>
-              <span>{occupied} occupied of {hospital.total_icu_beds}</span>
-            </div>
-          </div>
-
-          {/* Bed management */}
-          <div className="panel">
-            <h2 className="panel-title">Bed Management</h2>
-            <div className="bedmgmt">
-              <div className="bedmgmt-count">
-                <label className="count-label">Count</label>
-                <input
-                  className="count-input"
-                  type="number"
-                  min="1"
-                  value={count}
-                  onChange={(e) => setCount(Math.max(1, Number(e.target.value)))}
-                />
-              </div>
-              <div className="bedmgmt-actions">
-                {BED_ACTIONS.map(({ mode, label, cls }) => (
-                  <button
-                    key={mode}
-                    className={`bact ${cls}`}
-                    onClick={() => runBedAction(mode)}
-                    disabled={busy !== null}
-                  >
-                    {busy === mode
-                      ? <Loader2 size={14} className="spin-icon" />
-                      : label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Location */}
-          <div className="panel">
-            <h2 className="panel-title">Hospital Location</h2>
-            <p className="muted-text" style={{ marginBottom: 8, fontSize: '0.82rem' }}>
-              Current: {hospital.latitude.toFixed(6)}°N, {hospital.longitude.toFixed(6)}°E
-            </p>
-            <div className="bedmgmt">
-              <div style={{ display: 'flex', gap: 8, flex: 1 }}>
-                <input
-                  className="count-input"
-                  type="number"
-                  step="any"
-                  placeholder="Latitude"
-                  value={locEdit.lat}
-                  onChange={(e) => setLocEdit(p => ({ ...p, lat: e.target.value }))}
-                />
-                <input
-                  className="count-input"
-                  type="number"
-                  step="any"
-                  placeholder="Longitude"
-                  value={locEdit.lng}
-                  onChange={(e) => setLocEdit(p => ({ ...p, lng: e.target.value }))}
-                />
-              </div>
-              <div className="bedmgmt-actions">
-                <button className="bact bact-secondary" onClick={detectGps} disabled={locEdit.locating}>
-                  {locEdit.locating ? <Loader2 size={14} className="spin-icon" /> : <><Navigation size={14} /> GPS</>}
-                </button>
-                <button className="bact bact-primary" onClick={saveLocation} disabled={locEdit.busy || (!locEdit.lat && !locEdit.lng)}>
-                  {locEdit.busy ? <Loader2 size={14} className="spin-icon" /> : 'Save Location'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Alerts */}
-      <div className="panel">
-        <div className="panel-head">
-          <h2 className="panel-title">Incoming Ambulance Alerts</h2>
-          {pending.length > 0 && (
-            <span className="pending-badge">{pending.length} pending</span>
-          )}
-        </div>
-
-        {alerts.length === 0 ? (
-          <div className="no-alerts">
-            <CheckCircle2 size={16} strokeWidth={2} />
-            No active alerts right now
-          </div>
-        ) : (
-          <div className="alerts-stack">
-            {[...pending, ...rest].map((a) => (
-              <div className={`acard ${severityCls(a.severity)}`} key={a.id}>
-                <div className="acard-top">
-                  <div className="acard-chips">
-                    <span className={`sev-tag sev-tag-${(a.severity || '').toLowerCase()}`}>
-                      {a.severity || 'Unknown'}
-                    </span>
-                    <span className="info-chip">
-                      <Clock size={12} strokeWidth={2} />
-                      {Math.round(a.eta)} min ETA
-                    </span>
-                    <span className="info-chip">
-                      <Droplets size={12} strokeWidth={2} />
-                      {a.blood_group}
-                    </span>
-                    <span className="info-chip">
-                      <Activity size={12} strokeWidth={2} />
-                      O₂ {a.oxygen_level}%
-                    </span>
+            <>
+              {/* ── Section: Overview ──────────────────────────── */}
+              <section id="sect-overview" className="dash-section">
+                <div className="dash-banner">
+                  <div>
+                    <div className="dash-name-row">
+                      <h1 className="dash-name">{hospital.hospital_name}</h1>
+                      {status && <span className={`icu-badge ${status.cls}`}>{status.label}</span>}
+                    </div>
+                    <p className="dash-addr">
+                      <MapPin size={14} strokeWidth={2} />
+                      {hospital.hospital_address}
+                    </p>
                   </div>
-                  <span className={`status-tag st-${a.status}`}>{a.status}</span>
+                  <div className="dash-live">
+                    <span className="live-dot" />
+                    <span>Live</span>
+                  </div>
                 </div>
 
-                {a.patient_condition_notes && (
-                  <p className="acard-notes">
-                    <FileText size={13} strokeWidth={2} />
-                    {a.patient_condition_notes}
-                  </p>
-                )}
+                <div className="stat-row">
+                  <StatCard icon={BedDouble}    val={hospital.total_icu_beds}     lbl="Total Beds"     mod=""           />
+                  <StatCard icon={CheckCircle2} val={hospital.available_icu_beds} lbl="Available"      mod="sc-success" />
+                  <StatCard icon={XCircle}      val={occupied}                    lbl="Occupied"       mod="sc-plum"    />
+                  <StatCard icon={Bell}         val={pending.length}              lbl="Pending Alerts" mod="sc-warn"    />
+                </div>
 
-                {a.status === 'pending' && (
-                  <div className="acard-actions">
-                    <button className="aact aact-ack"
-                      onClick={() => handleAlert(a.id, 'acknowledged')}>
-                      Acknowledge
-                    </button>
-                    <button className="aact aact-done"
-                      onClick={() => handleAlert(a.id, 'completed')}>
-                      Complete
-                    </button>
-                    <button className="aact aact-cancel"
-                      onClick={() => handleAlert(a.id, 'cancelled')}>
-                      Cancel
-                    </button>
+                <div className="panel">
+                  <div className="panel-head">
+                    <h2 className="panel-title">ICU Occupancy</h2>
+                    <span className="pct-chip">{pct}%</span>
                   </div>
+                  <div className="occ-bar">
+                    <div className="occ-fill" style={{ width: `${pct}%`, background: fillColor }} />
+                  </div>
+                  <div className="occ-labels">
+                    <span>{hospital.available_icu_beds} available</span>
+                    <span>{occupied} occupied of {hospital.total_icu_beds}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* ── Section: ICU Beds ──────────────────────────── */}
+              <section id="sect-beds" className="dash-section">
+                <div className="panel">
+                  <h2 className="panel-title" style={{ marginBottom: 20 }}>Bed Management</h2>
+                  <div className="bedmgmt">
+                    <div className="bedmgmt-count">
+                      <label className="count-label">Count</label>
+                      <input
+                        className="count-input"
+                        type="number"
+                        min="1"
+                        value={count}
+                        onChange={(e) => setCount(Math.max(1, Number(e.target.value)))}
+                      />
+                    </div>
+                    <div className="bedmgmt-actions">
+                      {BED_ACTIONS.map(({ mode, label, cls }) => (
+                        <button
+                          key={mode}
+                          className={`bact ${cls}`}
+                          onClick={() => runBedAction(mode)}
+                          disabled={busy !== null}
+                        >
+                          {busy === mode
+                            ? <Loader2 size={14} className="spin-icon" />
+                            : label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* ── Section: Settings / Location ───────────────── */}
+              <section id="sect-location" className="dash-section">
+                <div className="panel">
+                  <h2 className="panel-title" style={{ marginBottom: 12 }}>Hospital Location</h2>
+                  <p className="muted-text" style={{ marginBottom: 12, fontSize: '0.82rem' }}>
+                    Current: {hospital.latitude.toFixed(6)}°N, {hospital.longitude.toFixed(6)}°E
+                  </p>
+                  <div className="bedmgmt">
+                    <div style={{ display: 'flex', gap: 8, flex: 1 }}>
+                      <input
+                        className="count-input"
+                        type="number"
+                        step="any"
+                        placeholder="Latitude"
+                        value={locEdit.lat}
+                        onChange={(e) => setLocEdit(p => ({ ...p, lat: e.target.value }))}
+                      />
+                      <input
+                        className="count-input"
+                        type="number"
+                        step="any"
+                        placeholder="Longitude"
+                        value={locEdit.lng}
+                        onChange={(e) => setLocEdit(p => ({ ...p, lng: e.target.value }))}
+                      />
+                    </div>
+                    <div className="bedmgmt-actions">
+                      <button className="bact bact-secondary" onClick={detectGps} disabled={locEdit.locating}>
+                        {locEdit.locating ? <Loader2 size={14} className="spin-icon" /> : <><Navigation size={14} /> GPS</>}
+                      </button>
+                      <button className="bact bact-primary" onClick={saveLocation} disabled={locEdit.busy || (!locEdit.lat && !locEdit.lng)}>
+                        {locEdit.busy ? <Loader2 size={14} className="spin-icon" /> : 'Save Location'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </>
+          )}
+
+          {/* ── Section: Emergency Requests ─────────────────── */}
+          <section id="sect-alerts" className="dash-section">
+            <div className="panel">
+              <div className="panel-head">
+                <h2 className="panel-title">Incoming Ambulance Alerts</h2>
+                {pending.length > 0 && (
+                  <span className="pending-badge">{pending.length} pending</span>
                 )}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+
+              {alerts.length === 0 ? (
+                <div className="no-alerts">
+                  <CheckCircle2 size={16} strokeWidth={2} />
+                  No active alerts right now
+                </div>
+              ) : (
+                <div className="alerts-stack">
+                  {[...pending, ...rest].map((a) => (
+                    <div className={`acard ${severityCls(a.severity)}`} key={a.id}>
+                      <div className="acard-top">
+                        <div className="acard-chips">
+                          <span className={`sev-tag sev-tag-${(a.severity || '').toLowerCase()}`}>
+                            {a.severity || 'Unknown'}
+                          </span>
+                          <span className="info-chip">
+                            <Clock size={12} strokeWidth={2} />
+                            {Math.round(a.eta)} min ETA
+                          </span>
+                          <span className="info-chip">
+                            <Droplets size={12} strokeWidth={2} />
+                            {a.blood_group}
+                          </span>
+                          <span className="info-chip">
+                            <Activity size={12} strokeWidth={2} />
+                            O₂ {a.oxygen_level}%
+                          </span>
+                        </div>
+                        <span className={`status-tag st-${a.status}`}>{a.status}</span>
+                      </div>
+
+                      {a.patient_condition_notes && (
+                        <p className="acard-notes">
+                          <FileText size={13} strokeWidth={2} />
+                          {a.patient_condition_notes}
+                        </p>
+                      )}
+
+                      {a.status === 'pending' && (
+                        <div className="acard-actions">
+                          <button className="aact aact-ack"
+                            onClick={() => handleAlert(a.id, 'acknowledged')}>
+                            Acknowledge
+                          </button>
+                          <button className="aact aact-done"
+                            onClick={() => handleAlert(a.id, 'completed')}>
+                            Complete
+                          </button>
+                          <button className="aact aact-cancel"
+                            onClick={() => handleAlert(a.id, 'cancelled')}>
+                            Cancel
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+        </div>{/* end dash-content */}
+      </main>{/* end dash-main */}
     </div>
   );
 }
@@ -703,7 +809,11 @@ function AuthView({ onAuthenticated }) {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo">
-          <Building2 size={36} strokeWidth={1.5} />
+          <div className="auth-logo-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M12 3v18M3 12h18" />
+            </svg>
+          </div>
         </div>
         <h1 className="auth-heading">Hospital Portal</h1>
         <p className="auth-sub">
@@ -905,7 +1015,7 @@ export default function App() {
       />
       <main className="app-main">
         {viewMode === 'public'
-          ? <PublicView />
+          ? <PublicView onNavigate={setViewMode} />
           : authenticated
             ? <HospitalDashboard onUnauthorized={logout} />
             : <AuthView onAuthenticated={handleAuthenticated} />}

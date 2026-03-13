@@ -144,8 +144,8 @@ export default function Dashboard({ onLogout }) {
             <Ambulance size={21} color="#fff" />
           </div>
           <div>
-            <div className="header__title">Emergency Routing</div>
-            <div className="header__subtitle">Ambulance · ICU Finder</div>
+            <div className="header__title">ICU Connect</div>
+            <div className="header__subtitle">Ambulance · Emergency Routing</div>
           </div>
         </div>
 
@@ -172,7 +172,7 @@ export default function Dashboard({ onLogout }) {
         <div className="hero-strip__content">
           <span className="hero-strip__badge">Emergency Mode</span>
           <h1 className="hero-strip__heading">Find the Nearest ICU Hospital</h1>
-          <p className="hero-strip__sub">Ranked by Haversine distance with ICU availability and stable live routing</p>
+          <p className="hero-strip__sub">Real-time ICU bed tracking — find and route to the closest available hospital instantly</p>
         </div>
       </div>
 

@@ -48,53 +48,83 @@ function AuthView({ onAuthenticated }) {
   };
 
   return (
-    <div className="dashboard" style={{ maxWidth: 680, margin: '0 auto', padding: '24px' }}>
-      <h2>{mode === 'signup' ? 'Ambulance Signup' : 'Ambulance Login'}</h2>
-      {error && <div className="error-banner">{error}</div>}
-      <form onSubmit={submit} style={{ display: 'grid', gap: 10 }}>
-        {mode === 'signup' && (
-          <>
-            <input className="form-control" placeholder="Ambulance ID" value={form.ambulance_id} onChange={(e) => setField('ambulance_id', e.target.value)} required />
-            <input className="form-control" placeholder="Driver Name" value={form.driver_name} onChange={(e) => setField('driver_name', e.target.value)} required />
-            <input className="form-control" placeholder="Driver Phone" value={form.driver_phone} onChange={(e) => setField('driver_phone', e.target.value)} required />
-            <input className="form-control" placeholder="Registration Number" value={form.ambulance_registration_number} onChange={(e) => setField('ambulance_registration_number', e.target.value)} required />
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-logo-wrap">
+          <div className="auth-logo-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8M12 3v4"/>
+            </svg>
+          </div>
+        </div>
+        <h1 className="auth-heading">ICU Connect</h1>
+        <p className="auth-sub">
+          {mode === 'signup' ? 'Register your ambulance to get started' : 'Sign in to emergency routing'}
+        </p>
 
-            {/* Optional base location */}
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input
-                className="form-control"
-                type="number"
-                step="any"
-                placeholder="Latitude (optional)"
-                value={form.latitude ?? ''}
-                onChange={(e) => setField('latitude', e.target.value ? Number(e.target.value) : null)}
-              />
-              <input
-                className="form-control"
-                type="number"
-                step="any"
-                placeholder="Longitude (optional)"
-                value={form.longitude ?? ''}
-                onChange={(e) => setField('longitude', e.target.value ? Number(e.target.value) : null)}
-              />
-              <button type="button" className="btn btn-ghost" style={{ whiteSpace: 'nowrap', width: 'auto' }} onClick={detectLocation} disabled={locating}>
-                {locating ? '…' : '📍 GPS'}
-              </button>
-            </div>
-            {form.latitude != null && (
-              <div style={{ fontSize: '0.78rem', color: '#636363' }}>
-                Location saved: {Number(form.latitude).toFixed(5)}°N, {Number(form.longitude).toFixed(5)}°E
+        <div className="auth-tabs">
+          <button
+            className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
+            onClick={() => setMode('login')}
+          >
+            Login
+          </button>
+          <button
+            className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
+            onClick={() => setMode('signup')}
+          >
+            Sign Up
+          </button>
+        </div>
+
+        {error && <div className="error-banner" style={{ marginBottom: 14 }}>{error}</div>}
+
+        <form onSubmit={submit} className="auth-form">
+          {mode === 'signup' && (
+            <>
+              <div className="auth-two-col">
+                <input className="form-control" placeholder="Ambulance ID" value={form.ambulance_id} onChange={(e) => setField('ambulance_id', e.target.value)} required />
+                <input className="form-control" placeholder="Driver Name" value={form.driver_name} onChange={(e) => setField('driver_name', e.target.value)} required />
               </div>
-            )}
-          </>
-        )}
-        <input className="form-control" placeholder="Email" type="email" value={form.email} onChange={(e) => setField('email', e.target.value)} required />
-        <input className="form-control" placeholder="Password" type="password" value={form.password} onChange={(e) => setField('password', e.target.value)} required />
-        <button className="btn btn-primary" type="submit">{mode === 'signup' ? 'Create Ambulance Account' : 'Login'}</button>
-      </form>
-      <button className="btn btn-ghost" onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')} style={{ marginTop: 12 }}>
-        {mode === 'signup' ? 'Already have an account?' : 'Need an account? Sign up'}
-      </button>
+              <div className="auth-two-col">
+                <input className="form-control" placeholder="Driver Phone" value={form.driver_phone} onChange={(e) => setField('driver_phone', e.target.value)} required />
+                <input className="form-control" placeholder="Registration Number" value={form.ambulance_registration_number} onChange={(e) => setField('ambulance_registration_number', e.target.value)} required />
+              </div>
+              <div className="auth-gps-row">
+                <input
+                  className="form-control"
+                  type="number"
+                  step="any"
+                  placeholder="Latitude (optional)"
+                  value={form.latitude ?? ''}
+                  onChange={(e) => setField('latitude', e.target.value ? Number(e.target.value) : null)}
+                />
+                <input
+                  className="form-control"
+                  type="number"
+                  step="any"
+                  placeholder="Longitude (optional)"
+                  value={form.longitude ?? ''}
+                  onChange={(e) => setField('longitude', e.target.value ? Number(e.target.value) : null)}
+                />
+                <button type="button" className="auth-gps-btn" onClick={detectLocation} disabled={locating}>
+                  {locating ? '…' : '📍 GPS'}
+                </button>
+              </div>
+              {form.latitude != null && (
+                <div className="auth-location-saved">
+                  ✓ Location: {Number(form.latitude).toFixed(5)}°N, {Number(form.longitude).toFixed(5)}°E
+                </div>
+              )}
+            </>
+          )}
+          <input className="form-control" placeholder="Email address" type="email" value={form.email} onChange={(e) => setField('email', e.target.value)} required />
+          <input className="form-control" placeholder="Password" type="password" value={form.password} onChange={(e) => setField('password', e.target.value)} required />
+          <button className="auth-submit-btn" type="submit">
+            {mode === 'signup' ? 'Create Account' : 'Sign In'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

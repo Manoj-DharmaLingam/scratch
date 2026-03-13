@@ -1,46 +1,46 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* --- Surfaces (Google Material You) --- */
-  --blush:       #f8f9fa;
-  --blush-mid:   #f1f3f4;
-  --peach:       #dadce0;
+  /* ── Teal Medical Theme ─────────────────────────────────────── */
+  --blush:       #f3fdfb;
+  --blush-mid:   #e6f7f5;
+  --peach:       #c9ecea;
   --cream:       #ffffff;
   --white:       #ffffff;
 
-  /* --- Accent (Google Blue) --- */
-  --purple-accent: #0b57d0;
-  --purple-light:  #e8f0fe;
-  --purple-mid:    #d2e3fc;
+  /* ── Accent: Teal (replaces Google Blue) ─────────────────────── */
+  --purple-accent: #2EC4B6;
+  --purple-light:  rgba(46, 196, 182, 0.10);
+  --purple-mid:    rgba(46, 196, 182, 0.20);
 
-  /* --- Text (Google text scale) --- */
-  --text-dark:  #1f1f1f;
-  --text-mid:   #545454;
-  --text-light: #636363;
-  --text-muted: #80868b;
+  /* ── Text ───────────────────────────────────────────────────── */
+  --text-dark:  #0d2f2d;
+  --text-mid:   #3d6865;
+  --text-light: #5a8b89;
+  --text-muted: #7aada9;
 
-  /* --- Status (Google semantic colors) --- */
-  --success:    #146c2e;
-  --success-bg: #e6f4ea;
-  --danger:     #b3261e;
-  --danger-bg:  #fce8e6;
-  --warning:    #b06000;
-  --warning-bg: #fef7e0;
+  /* ── Status ─────────────────────────────────────────────────── */
+  --success:    #10b981;
+  --success-bg: #d1fae5;
+  --danger:     #ef4444;
+  --danger-bg:  #fee2e2;
+  --warning:    #f59e0b;
+  --warning-bg: #fef3c7;
 
-  /* --- Borders --- */
-  --border:      rgba(0, 0, 0, .09);
-  --border-soft: rgba(0, 0, 0, .05);
+  /* ── Borders ─────────────────────────────────────────────────── */
+  --border:      rgba(46, 196, 182, 0.18);
+  --border-soft: rgba(46, 196, 182, 0.10);
 
-  /* --- Radii --- */
+  /* ── Radii ──────────────────────────────────────────────────── */
   --radius-pill: 999px;
-  --radius-lg:   10px;
-  --radius-md:   6px;
-  --radius-sm:   4px;
+  --radius-lg:   14px;
+  --radius-md:   10px;
+  --radius-sm:   6px;
 
-  /* --- Shadows --- */
-  --shadow-card:       0 1px 3px rgba(0, 0, 0, .07), 0 1px 2px rgba(0, 0, 0, .04);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, .10), 0 2px 4px rgba(0, 0, 0, .05);
-  --shadow-btn:        0 1px 4px rgba(11, 87, 208, 0.25);
+  /* ── Shadows ─────────────────────────────────────────────────── */
+  --shadow-card:       0 2px 12px rgba(46,196,182,0.08), 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-card-hover: 0 6px 24px rgba(46,196,182,0.14), 0 2px 6px rgba(0,0,0,0.06);
+  --shadow-btn:        0 3px 10px rgba(46, 196, 182, 0.30);
 
   --t-fast: 0.15s ease;
   --t-mid:  0.2s ease;
@@ -50,7 +50,7 @@
 html, body, #root { height: 100%; }
 
 body {
-  font-family: 'Google Sans', Roboto, Arial, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   background: var(--cream);
   color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
@@ -85,7 +85,7 @@ body {
 
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.5; }
+  50%       { opacity: 0.4; }
 }
 
 .spinner {
@@ -112,7 +112,8 @@ body {
 
 .deco-line {
   width: 32px;
-  height: 1px;
-  background: var(--border);
+  height: 2px;
+  background: var(--purple-mid);
+  border-radius: 2px;
   margin: 0 auto 0.5rem;
 }
