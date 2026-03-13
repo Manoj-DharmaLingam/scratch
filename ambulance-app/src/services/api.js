@@ -1,91 +1,118 @@
+import axios from 'axios';
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const api = axios.create({ baseURL: BASE_URL });
+
+// Auto-logout when a protected call returns 401 (expired / invalid token)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && localStorage.getItem('ambulance_token')) {
+      localStorage.removeItem('ambulance_token');
+      window.dispatchEvent(new Event('ambulance:unauthorized'));
+    }
+    return Promise.reject(error);
+  }
+);
 
 function authHeaders() {
   const token = localStorage.getItem('ambulance_token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function fetchJson(path, options = {}) {
-  const response = await fetch(`${BASE_URL}${path}`, options);
-  if (!response.ok) {
-    let message = `Request failed with ${response.status}`;
-    const contentType = response.headers.get('content-type') || '';
+function extractError(error) {
+  if (error.response) {
+    const payload = error.response.data;
+    let message = `Request failed with ${error.response.status}`;
 
-    if (contentType.includes('application/json')) {
-      const payload = await response.json();
+    if (typeof payload === 'string' && payload) {
+      message = payload;
+    } else if (payload && typeof payload === 'object') {
       message = payload.detail || payload.message || JSON.stringify(payload);
-    } else {
-      const text = await response.text();
-      if (text) message = text;
     }
 
-    const error = new Error(message);
-    error.status = response.status;
-    throw error;
+    const wrapped = new Error(message);
+    wrapped.status = error.response.status;
+    return wrapped;
   }
-  return response.json();
+
+  return new Error(error.message || 'Network request failed');
+}
+
+async function ajaxJson(path, options = {}) {
+  try {
+    const response = await api.request({ url: path, ...options });
+    return response.data;
+  } catch (error) {
+    throw extractError(error);
+  }
 }
 
 export async function ambulanceSignup(payload) {
-  return fetchJson('/auth/ambulance/signup', {
+  return ajaxJson('/auth/ambulance/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    data: payload,
   });
 }
 
 export async function ambulanceLogin(payload) {
-  return fetchJson('/auth/ambulance/login', {
+  return ajaxJson('/auth/ambulance/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    data: payload,
   });
 }
 
 export async function postAmbulanceRequest(payload) {
-  return fetchJson('/ambulance/request', {
+  return ajaxJson('/ambulance/request', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify(payload),
+    data: payload,
   });
 }
 
 export async function fetchRecommendedHospitals(lat, lng, severity, requiredSpecialty = '') {
-  const params = new URLSearchParams({
+  const params = {
     latitude: String(lat),
     longitude: String(lng),
     severity,
-  });
-  if (requiredSpecialty) params.set('required_specialty', requiredSpecialty);
-  return fetchJson(`/ambulance/recommend-hospital?${params.toString()}`, {
+  };
+
+  if (requiredSpecialty) {
+    params.required_specialty = requiredSpecialty;
+  }
+
+  return ajaxJson('/ambulance/recommend-hospital', {
     headers: { ...authHeaders() },
+    params,
   });
 }
 
 export async function postAlert(payload) {
-  return fetchJson('/alerts', {
+  return ajaxJson('/alerts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify(payload),
+    data: payload,
   });
 }
 
 export async function bookIcu(hospitalId, ambulanceRequestId) {
-  return fetchJson('/ambulance/book-icu', {
+  return ajaxJson('/ambulance/book-icu', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify({ hospital_id: hospitalId, ambulance_request_id: ambulanceRequestId }),
+    data: { hospital_id: hospitalId, ambulance_request_id: ambulanceRequestId },
   });
 }
 
 export async function getAmbulanceMe() {
-  return fetchJson('/ambulance/me', { headers: { ...authHeaders() } });
+  return ajaxJson('/ambulance/me', { headers: { ...authHeaders() } });
 }
 
 export async function updateAmbulanceLocation(latitude, longitude) {
-  return fetchJson('/ambulance/update-location', {
+  return ajaxJson('/ambulance/update-location', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify({ latitude, longitude }),
+    data: { latitude, longitude },
   });
 }

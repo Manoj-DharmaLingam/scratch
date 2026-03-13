@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import { ambulanceLogin, ambulanceSignup } from './services/api';
 
@@ -82,7 +82,7 @@ function AuthView({ onAuthenticated }) {
               </button>
             </div>
             {form.latitude != null && (
-              <div style={{ fontSize: '0.78rem', color: '#6b7280' }}>
+              <div style={{ fontSize: '0.78rem', color: '#636363' }}>
                 Location saved: {Number(form.latitude).toFixed(5)}°N, {Number(form.longitude).toFixed(5)}°E
               </div>
             )}
@@ -101,6 +101,12 @@ function AuthView({ onAuthenticated }) {
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(Boolean(localStorage.getItem('ambulance_token')));
+
+  useEffect(() => {
+    const handleUnauth = () => setAuthenticated(false);
+    window.addEventListener('ambulance:unauthorized', handleUnauth);
+    return () => window.removeEventListener('ambulance:unauthorized', handleUnauth);
+  }, []);
 
   if (!authenticated) {
     return <AuthView onAuthenticated={() => setAuthenticated(true)} />;

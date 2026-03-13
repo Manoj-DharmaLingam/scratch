@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchRecommendedHospitals } from '../services/api';
 import HospitalCard from './HospitalCard';
 import { RefreshCw, Building2 } from 'lucide-react';
@@ -19,30 +19,40 @@ function SkeletonCard() {
   );
 }
 
+const POLL_MS = 5000;
+
 export default function HospitalList({ lat, lng, severity, requiredSpecialty, onSelect, selectedHospital, onHospitalsLoaded }) {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading]     = useState(true);
   const [error, setError] = useState('');
   const [lastRefresh, setLastRefresh] = useState(null);
 
-  const load = useCallback(async () => {
+  const onHospitalsLoadedRef = useRef(onHospitalsLoaded);
+  useEffect(() => { onHospitalsLoadedRef.current = onHospitalsLoaded; }, [onHospitalsLoaded]);
+
+  const load = useCallback(async (silent = false) => {
     if (!lat || !lng) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const data = await fetchRecommendedHospitals(lat, lng, severity, requiredSpecialty);
       setHospitals(data);
       setError('');
       setLastRefresh(new Date());
-      if (onHospitalsLoaded) onHospitalsLoaded(data);
+      if (onHospitalsLoadedRef.current) onHospitalsLoadedRef.current(data);
     } catch (err) {
-      setHospitals([]);
-      setError(err.message || 'Unable to load hospital recommendations.');
+      if (!silent) {
+        setHospitals([]);
+        setError(err.message || 'Unable to load hospital recommendations.');
+      }
+    } finally {
+      if (!silent) setLoading(false);
     }
-    finally { setLoading(false); }
-  }, [lat, lng, severity, requiredSpecialty]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [lat, lng, severity, requiredSpecialty]);
 
   useEffect(() => {
-    load();
+    load(false);
+    const timer = setInterval(() => load(true), POLL_MS);
+    return () => clearInterval(timer);
   }, [load]);
 
   const refreshLabel = lastRefresh
@@ -56,7 +66,7 @@ export default function HospitalList({ lat, lng, severity, requiredSpecialty, on
           <Building2 size={16} color="var(--purple-accent)" />
           Nearby Hospitals
         </span>
-        <button className="btn btn-ghost" type="button" onClick={load} style={{ width: 'auto', fontSize: '0.78rem', padding: '0.45rem 0.75rem' }}>
+        <button className="btn btn-ghost" type="button" onClick={() => load(false)} style={{ width: 'auto', fontSize: '0.78rem', padding: '0.45rem 0.75rem' }}>
           <RefreshCw size={12} /> {refreshLabel}
         </button>
       </div>

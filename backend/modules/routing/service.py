@@ -1,12 +1,11 @@
 import math
 from time import monotonic
-from typing import Any
 
 from sqlalchemy.orm import Session
 
 from core.config import settings
 from database.crud.common import cleanup_expired_reservations, parse_specialties
-from database.models import AmbulanceRequest, Hospital
+from database.models import Hospital
 
 _HOSPITAL_COORD_CACHE: dict[str, object] = {"timestamp": 0.0, "items": []}
 _CACHE_TTL_SECONDS = 30.0
@@ -28,44 +27,6 @@ def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return 2 * radius * math.asin(math.sqrt(a))
 
 
-def calculate_distance_km(patient_latitude: float, patient_longitude: float, hospital_latitude: float, hospital_longitude: float) -> float:
-    return _haversine_km(patient_latitude, patient_longitude, hospital_latitude, hospital_longitude)
-
-
-def find_nearest_hospitals(
-    patient_latitude: float,
-    patient_longitude: float,
-    hospitals: list[dict[str, Any]],
-    top_n: int = 3,
-) -> list[dict[str, Any]]:
-    ranked_hospitals: list[dict[str, Any]] = []
-
-    for hospital in hospitals:
-        if hospital.get("icu_beds_available", 0) <= 0:
-            continue
-
-        distance_km = calculate_distance_km(
-            patient_latitude,
-            patient_longitude,
-            float(hospital["latitude"]),
-            float(hospital["longitude"]),
-        )
-
-        ranked_hospitals.append(
-            {
-                "hospital_name": hospital["hospital_name"],
-                "latitude": hospital["latitude"],
-                "longitude": hospital["longitude"],
-                "icu_beds_available": hospital["icu_beds_available"],
-                "specialty": hospital["specialty"],
-                "distance_km": round(distance_km, 2),
-            }
-        )
-
-    ranked_hospitals.sort(key=lambda hospital: hospital["distance_km"])
-    return ranked_hospitals[:top_n]
-
-
 async def _eta_minutes_with_fallback(origin_lat: float, origin_lng: float, hospital: Hospital) -> tuple[float, float]:
     distance_km = _haversine_km(origin_lat, origin_lng, hospital.latitude, hospital.longitude)
     speed_kmh = max(settings.AMBULANCE_AVERAGE_SPEED_KMH, 1.0)
@@ -84,44 +45,6 @@ def _get_candidate_hospitals(db: Session) -> list[Hospital]:
     return hospitals
 
 
-async def recommend_hospitals(db: Session, request: AmbulanceRequest) -> list[dict]:
-    cleanup_expired_reservations(db)
-    hospitals = _get_candidate_hospitals(db)
-
-    ranked: list[dict] = []
-    for hospital in hospitals:
-        eta_minutes, distance_km = await _eta_minutes_with_fallback(request.latitude, request.longitude, hospital)
-        hospital_specialties = parse_specialties(hospital.specialties)
-        specialty_score = 1 if request.required_specialty and request.required_specialty in hospital_specialties else 0
-        ranked.append(
-            {
-                "hospital_id": hospital.id,
-                "hospital_name": hospital.hospital_name,
-                "latitude": hospital.latitude,
-                "longitude": hospital.longitude,
-                "hospital_address": hospital.hospital_address,
-                "available_icu_beds": hospital.available_icu_beds,
-                "total_icu_beds": hospital.total_icu_beds,
-                "eta_minutes": round(eta_minutes, 2),
-                "distance_km": round(distance_km, 2),
-                "specialty_match": specialty_score,
-                "score": round(max(0.0, 1.0 / (1.0 + distance_km)), 6),
-                "_distance_sort": distance_km,
-            }
-        )
-    ranked.sort(
-        key=lambda row: (
-            row["_distance_sort"],
-            -row["available_icu_beds"],
-            -row["specialty_match"],
-            row["hospital_name"].lower(),
-        )
-    )
-    for row in ranked:
-        row.pop("_distance_sort", None)
-    return ranked
-
-
 async def recommend_hospitals_from_location(
     db: Session,
     latitude: float,
@@ -136,8 +59,13 @@ async def recommend_hospitals_from_location(
     ranked: list[dict] = []
     for hospital in hospitals:
         eta_minutes, distance_km = await _eta_minutes_with_fallback(latitude, longitude, hospital)
+
+        if distance_km > settings.MAX_REASONABLE_DISTANCE_KM:
+            continue
+
         hospital_specialties = parse_specialties(hospital.specialties)
         specialty_score = 1 if normalized_specialty and normalized_specialty in hospital_specialties else 0
+        bed_score = min(hospital.available_icu_beds / max(settings.OPTIMAL_ICU_BEDS, 1), 1.0)
         ranked.append(
             {
                 "hospital_id": hospital.id,
@@ -150,7 +78,7 @@ async def recommend_hospitals_from_location(
                 "eta_minutes": round(eta_minutes, 2),
                 "distance_km": round(distance_km, 2),
                 "specialty_match": specialty_score,
-                "score": round(max(0.0, 1.0 / (1.0 + distance_km)), 6),
+                "score": round(max(0.0, (1.0 / (1.0 + distance_km)) * (1.0 + bed_score * 0.2)), 6),
                 "_distance_sort": distance_km,
             }
         )
@@ -165,4 +93,4 @@ async def recommend_hospitals_from_location(
     )
     for row in ranked:
         row.pop("_distance_sort", None)
-    return ranked[:3]
+    return ranked[: settings.RECOMMEND_TOP_N]

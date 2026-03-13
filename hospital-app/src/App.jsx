@@ -298,18 +298,18 @@ function HospitalDashboard({ onUnauthorized }) {
     } catch { /* ignore */ }
   }
 
-  function startBeep() {
+  const startBeep = useCallback(() => {
     if (beepTimerRef.current) return;
     _playBeep();
     beepTimerRef.current = setInterval(_playBeep, 900);
-  }
+  }, []);
 
-  function stopBeep() {
+  const stopBeep = useCallback(() => {
     if (beepTimerRef.current) {
       clearInterval(beepTimerRef.current);
       beepTimerRef.current = null;
     }
-  }
+  }, []);
 
   const silenceAlarm = () => {
     criticalAlerts.forEach((alert) => silencedAlertIdsRef.current.add(alert.id));
@@ -352,7 +352,7 @@ function HospitalDashboard({ onUnauthorized }) {
     } finally {
       setLoading(false);
     }
-  }, [onUnauthorized]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [onUnauthorized, startBeep, stopBeep]);
 
   useEffect(() => {
     refresh();

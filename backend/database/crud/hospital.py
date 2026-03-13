@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from core.config import settings
 from database.crud.common import cleanup_expired_reservations, parse_specialties
 from database.models import Alert, Hospital, User
 from database.schemas.hospital import HospitalAlertsQueryResponse
@@ -60,7 +61,7 @@ def list_hospital_alerts(db: Session, hospital: Hospital) -> list[HospitalAlerts
         db.query(Alert)
         .filter(Alert.hospital_id == hospital.id)
         .order_by(Alert.created_at.desc())
-        .limit(100)
+        .limit(settings.ALERTS_QUERY_LIMIT)
         .all()
     )
     rows: list[HospitalAlertsQueryResponse] = []

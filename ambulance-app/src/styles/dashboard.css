@@ -47,12 +47,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.18);
+  box-shadow: 0 2px 8px rgba(179, 38, 30, 0.18);
   flex-shrink: 0;
 }
 
 .header__title {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-dark);
@@ -117,7 +117,7 @@
 }
 
 .hero-strip__heading {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text-dark);
@@ -177,7 +177,7 @@
 
 /* ─── Section Heading ─────────────────────────────────────────── */
 .section-heading {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -209,8 +209,8 @@
   box-shadow: var(--shadow-card);
 }
 
-.toast.success { background: var(--success-bg); border-color: rgba(5, 150, 105, 0.25); color: var(--success); }
-.toast.error   { background: var(--danger-bg);  border-color: rgba(220, 38, 38, 0.22); color: var(--danger); }
+.toast.success { background: var(--success-bg); border-color: rgba(20, 108, 46, 0.25); color: var(--success); }
+.toast.error   { background: var(--danger-bg);  border-color: rgba(179, 38, 30, 0.22); color: var(--danger); }
 .toast.info    { background: var(--purple-light); border-color: var(--purple-mid); color: var(--purple-accent); }
 
 /* ─── Responsive ──────────────────────────────────────────────── */

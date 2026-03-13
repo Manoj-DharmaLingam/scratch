@@ -66,7 +66,7 @@
 }
 
 .form-title {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -114,7 +114,7 @@
   border: 1.5px solid var(--border-soft);
   border-radius: var(--radius-md);
   color: var(--text-dark);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 400;
   transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
@@ -128,12 +128,12 @@
 .form-control:focus {
   border-color: var(--purple-accent);
   background: var(--white);
-  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+  box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.12);
 }
 
 .form-control.error {
   border-color: var(--danger);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.10);
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.10);
 }
 
 select.form-control {
@@ -170,7 +170,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   border: 1.5px solid var(--border-soft);
   background: var(--cream);
   color: var(--text-mid);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
@@ -221,7 +221,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   padding: 12px 22px;
   border-radius: var(--radius-pill);
   border: none;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 0.87rem;
   font-weight: 600;
   cursor: pointer;
@@ -243,9 +243,9 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #1643b8;
+  background: #0842a0;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(29, 78, 216, 0.35);
+  box-shadow: 0 4px 16px rgba(11, 87, 208, 0.35);
 }
 
 .btn-primary:active:not(:disabled) { transform: translateY(0); }
@@ -253,11 +253,11 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .btn-danger {
   background: var(--danger);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(220, 38, 38, 0.25);
+  box-shadow: 0 2px 10px rgba(179, 38, 30, 0.25);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #b33535;
+  background: #8c1d18;
   transform: translateY(-1px);
 }
 
@@ -307,13 +307,13 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .hospital-card.recommended {
   border-color: var(--purple-accent);
   background: var(--purple-light);
-  box-shadow: 0 2px 12px rgba(29, 78, 216, 0.12);
+  box-shadow: 0 2px 12px rgba(11, 87, 208, 0.12);
 }
 
 .hospital-card.selected {
   border-color: var(--success);
   background: var(--success-bg);
-  box-shadow: 0 2px 10px rgba(21, 128, 61, 0.12);
+  box-shadow: 0 2px 10px rgba(20, 108, 46, 0.12);
 }
 
 .hospital-card__header {
@@ -325,7 +325,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .hospital-card__name {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 0.98rem;
   font-weight: 700;
   color: var(--text-dark);
@@ -436,7 +436,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
   justify-content: center;
   color: #fff;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(29, 78, 216, 0.20);
+  box-shadow: 0 2px 8px rgba(11, 87, 208, 0.20);
 }
 
 .rec-banner__info { flex: 1; min-width: 0; }
@@ -451,7 +451,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .rec-banner__name {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-dark);
@@ -481,7 +481,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .hospital-list__title {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-dark);
@@ -529,7 +529,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 }
 
 .empty-state__title {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Google Sans', Roboto, Arial, sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-dark);
@@ -573,7 +573,7 @@ textarea.form-control { resize: vertical; min-height: 78px; max-height: 150px; }
 .error-banner {
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(220, 38, 38, 0.22);
+  border: 1px solid rgba(179, 38, 30, 0.22);
   background: var(--danger-bg);
   color: var(--danger);
   font-size: 0.8rem;

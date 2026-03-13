@@ -3,32 +3,14 @@ import { MapPin, AlertCircle } from 'lucide-react';
 
 const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
-// Warm / natural map styles — matches the organic cream palette
-const DARK_MAP_STYLES = [
-  { elementType: 'geometry',             stylers: [{ color: '#f5ede3' }] },
-  { elementType: 'labels.text.stroke',   stylers: [{ color: '#f9f4ef' }] },
-  { elementType: 'labels.text.fill',     stylers: [{ color: '#7a6a60' }] },
-  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#4a3a30' }] },
-  { featureType: 'poi',                  elementType: 'labels.text.fill',     stylers: [{ color: '#8a7a70' }] },
-  { featureType: 'poi.park',             elementType: 'geometry',              stylers: [{ color: '#d4e6c3' }] },
-  { featureType: 'poi.park',             elementType: 'labels.text.fill',      stylers: [{ color: '#6a8a5a' }] },
-  { featureType: 'road',                 elementType: 'geometry',              stylers: [{ color: '#ffffff' }] },
-  { featureType: 'road',                 elementType: 'geometry.stroke',       stylers: [{ color: '#e8d8c8' }] },
-  { featureType: 'road',                 elementType: 'labels.text.fill',      stylers: [{ color: '#7a6a60' }] },
-  { featureType: 'road.highway',         elementType: 'geometry',              stylers: [{ color: '#f0d8b8' }] },
-  { featureType: 'road.highway',         elementType: 'geometry.stroke',       stylers: [{ color: '#e0c8a0' }] },
-  { featureType: 'road.highway',         elementType: 'labels.text.fill',      stylers: [{ color: '#5a4a38' }] },
-  { featureType: 'transit',              elementType: 'geometry',              stylers: [{ color: '#ede4d8' }] },
-  { featureType: 'transit.station',      elementType: 'labels.text.fill',      stylers: [{ color: '#7a6a60' }] },
-  { featureType: 'water',                elementType: 'geometry',              stylers: [{ color: '#b8d4e8' }] },
-  { featureType: 'water',                elementType: 'labels.text.fill',      stylers: [{ color: '#5a7a9a' }] },
-];
+// Google Maps default clean light theme (no custom styles)
+const DARK_MAP_STYLES = [];
 
 // SVG marker creation
 function makeAmbulanceMarker(maps) {
   return {
     path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z',
-    fillColor: '#6b5b95',
+    fillColor: '#0b57d0',
     fillOpacity: 1,
     strokeColor: '#ffffff',
     strokeWeight: 1.5,
@@ -40,7 +22,7 @@ function makeAmbulanceMarker(maps) {
 function makeHospitalMarker(maps) {
   return {
     path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z',
-    fillColor: '#ff3b3b',
+    fillColor: '#ea4335',
     fillOpacity: 1,
     strokeColor: '#ffffff',
     strokeWeight: 1.5,
@@ -54,7 +36,7 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
   const googleMapRef = useRef(null);
   const markersRef = useRef([]);
   const routeRendererRef = useRef(null);
-  const isMapsConfigured = Boolean(MAPS_API_KEY && MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY_HERE');
+  const isMapsConfigured = Boolean(MAPS_API_KEY);
   const configError = isMapsConfigured
     ? null
     : 'Google Maps API key not configured. Add VITE_GOOGLE_MAPS_API_KEY to your .env file.';
@@ -87,14 +69,16 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
   useEffect(() => {
     if (!mapLoaded || !mapRef.current) return;
     const maps = window.google.maps;
-    const center = ambulanceLat && ambulanceLng
+    const hasLocation = ambulanceLat && ambulanceLng;
+    const center = hasLocation
       ? { lat: ambulanceLat, lng: ambulanceLng }
-      : { lat: 13.0827, lng: 80.2707 }; // Default: Chennai
+      : { lat: 20.0, lng: 0.0 };
+    const zoom = hasLocation ? 13 : 2;
 
     if (!googleMapRef.current) {
       googleMapRef.current = new maps.Map(mapRef.current, {
         center,
-        zoom: 13,
+        zoom,
         styles: DARK_MAP_STYLES,
         disableDefaultUI: false,
         zoomControl: true,
@@ -102,7 +86,7 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
         streetViewControl: false,
         fullscreenControl: true,
       });
-    } else if (ambulanceLat && ambulanceLng) {
+    } else if (hasLocation) {
       googleMapRef.current.setCenter(center);
     }
   }, [mapLoaded, ambulanceLat, ambulanceLng]);
@@ -139,10 +123,10 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
       });
       const infoWindow = new maps.InfoWindow({
         content: `
-          <div style="background:#1a1a1a;color:#fff;padding:10px;border-radius:8px;font-family:Inter,sans-serif;min-width:180px;">
-            <strong style="color:#00d4ff;">${h.hospital_name}</strong><br/>
-            <span style="font-size:12px;color:#aaa;">🕐 ${Math.round(h.eta_minutes)} mins · 📍 ${h.distance_km} km</span><br/>
-            <span style="font-size:12px;color:#aaa;">🛏 ${h.available_icu_beds} ICU beds</span>
+          <div style="padding:10px 12px;font-family:'Google Sans',Roboto,Arial,sans-serif;min-width:180px;">
+            <strong style="color:#1f1f1f;font-size:0.9rem;">${h.hospital_name}</strong><br/>
+            <span style="font-size:0.78rem;color:#636363;">🕐 ${Math.round(h.eta_minutes)} min · 📍 ${h.distance_km} km</span><br/>
+            <span style="font-size:0.78rem;color:#636363;">🛏 ${h.available_icu_beds} ICU beds</span>
           </div>
         `,
       });
@@ -166,7 +150,7 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
 
     if (!routeRendererRef.current) {
       routeRendererRef.current = new maps.DirectionsRenderer({
-        polylineOptions: { strokeColor: '#6b5b95', strokeWeight: 4, strokeOpacity: 0.85 },
+        polylineOptions: { strokeColor: '#0b57d0', strokeWeight: 4, strokeOpacity: 0.85 },
         suppressMarkers: true,
       });
       routeRendererRef.current.setMap(googleMapRef.current);

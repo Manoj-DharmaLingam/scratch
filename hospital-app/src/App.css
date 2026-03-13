@@ -230,7 +230,7 @@ h1, h2, h3, h4, .logo-title, .page-title {
   outline: none;
   border-color: var(--accent);
   background: var(--bg-card);
-  box-shadow: 0 0 0 4px rgba(202, 160, 84, 0.1);
+  box-shadow: 0 0 0 4px rgba(11, 87, 208, 0.1);
 }
 
 .login-btn {
@@ -529,7 +529,7 @@ h1, h2, h3, h4, .logo-title, .page-title {
   color: white;
 }
 .btn-admit:hover:not(:disabled) {
-  background: #1a43c8;
+  background: #0842a0;
 }
 
 .btn-discharge {
@@ -567,7 +567,7 @@ h1, h2, h3, h4, .logo-title, .page-title {
   color: white;
   border: none;
 }
-.btn-primary:hover:not(:disabled) { background: #1a43c8; }
+.btn-primary:hover:not(:disabled) { background: #0842a0; }
 
 .btn-primary:disabled, .btn-secondary:disabled {
   opacity: 0.5;
@@ -601,7 +601,7 @@ h1, h2, h3, h4, .logo-title, .page-title {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(202, 160, 84, 0.2);
+  border: 3px solid rgba(11, 87, 208, 0.2);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -611,7 +611,7 @@ h1, h2, h3, h4, .logo-title, .page-title {
 
 /* Bed logic classes reused */
 .bed-available { background: var(--bg-secondary); color: var(--text-muted); border: 1px dashed var(--border); }
-.bed-occupied { background: rgba(92, 45, 94, 0.1); color: var(--plum); border: 1px solid rgba(92, 45, 94, 0.2); }
+.bed-occupied { background: rgba(104, 29, 168, 0.1); color: var(--plum); border: 1px solid rgba(104, 29, 168, 0.2); }
 
 .beds-visual {
   display: grid;
@@ -662,7 +662,7 @@ h1, h2, h3, h4, .logo-title, .page-title {
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(42, 31, 20, 0.4);
+  background: rgba(0, 29, 53, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -884,13 +884,13 @@ h1, h2, h3, h4, .logo-title, .page-title {
 }
 .bact:disabled { opacity: 0.5; cursor: not-allowed; }
 .bact-primary  { background: var(--accent); color: #fff; border-color: var(--accent); }
-.bact-primary:hover:not(:disabled)  { background: #1a43c8; }
+.bact-primary:hover:not(:disabled)  { background: #0842a0; }
 .bact-secondary{ background: transparent; color: var(--text-primary); border-color: var(--border); }
 .bact-secondary:hover:not(:disabled){ background: var(--bg-secondary); }
 .bact-warn     { background: var(--warning-dim); color: var(--warning); border-color: var(--warning); }
-.bact-warn:hover:not(:disabled)     { background: rgba(217,119,6,.12); }
+.bact-warn:hover:not(:disabled)     { background: rgba(176, 96, 0, .12); }
 .bact-success  { background: var(--success-dim); color: var(--success); border-color: var(--success); }
-.bact-success:hover:not(:disabled)  { background: rgba(5,150,105,.12); }
+.bact-success:hover:not(:disabled)  { background: rgba(20, 108, 46, .12); }
 
 /* ── Alert Cards ───────────────────────────────────────────────── */
 .no-alerts { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 24px; color: var(--text-secondary); font-size: 0.95rem; }
@@ -946,9 +946,9 @@ h1, h2, h3, h4, .logo-title, .page-title {
   font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: var(--transition);
 }
 .aact-ack    { background: var(--warning-dim); color: var(--warning); border: 1px solid var(--warning); }
-.aact-ack:hover    { background: rgba(217,119,6,.12); }
+.aact-ack:hover    { background: rgba(176, 96, 0, .12); }
 .aact-done   { background: var(--success-dim); color: var(--success); border: 1px solid var(--success); }
-.aact-done:hover   { background: rgba(5,150,105,.12); }
+.aact-done:hover   { background: rgba(20, 108, 46, .12); }
 .aact-cancel { background: var(--bg-secondary); color: var(--text-muted); border: 1px solid var(--border); }
 .aact-cancel:hover { background: var(--danger-dim); color: var(--danger); border-color: var(--danger); }
 
@@ -1017,7 +1017,7 @@ h1, h2, h3, h4, .logo-title, .page-title {
   font-weight: 600; cursor: pointer; transition: var(--transition);
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.auth-submit:hover:not(:disabled) { background: #1a43c8; }
+.auth-submit:hover:not(:disabled) { background: #0842a0; }
 .auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ── Spinner ───────────────────────────────────────────────────── */
@@ -1037,8 +1037,8 @@ h1, h2, h3, h4, .logo-title, .page-title {
 }
 
 @keyframes alarm-pulse {
-  from { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7), 0 4px 16px rgba(220, 38, 38, 0.4); }
-  to   { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0), 0 4px 28px rgba(220, 38, 38, 0.7); }
+  from { box-shadow: 0 0 0 0 rgba(179, 38, 30, 0.7), 0 4px 16px rgba(179, 38, 30, 0.4); }
+  to   { box-shadow: 0 0 0 10px rgba(179, 38, 30, 0), 0 4px 28px rgba(179, 38, 30, 0.7); }
 }
 
 .eta-alarm-icon {
