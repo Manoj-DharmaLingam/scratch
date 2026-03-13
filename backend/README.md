@@ -1,23 +1,31 @@
-# Emergency ICU Unified Backend
+# Emergency ICU Routing Backend
 
-## Run
+FastAPI backend for the Smart ICU Management platform. It manages hospital and ambulance accounts, ICU bed state, hospital recommendations, and pre-arrival alert workflows.
 
-1. Create PostgreSQL database (example: `emergency_icu`).
-2. Copy `.env.example` to `.env` and update credentials.
-3. Install dependencies:
-   `pip install -r requirements.txt`
-4. Start server:
-   `uvicorn main:app --reload --port 8000`
+## Setup
 
-## Key Endpoints
+1. Create a PostgreSQL database such as `emergency_icu`
+2. Copy `.env.example` to `.env`
+3. Install dependencies with `pip install -r requirements.txt`
+4. Run the API with `uvicorn main:app --reload --port 8000`
+
+Tables are created automatically on startup from the SQLAlchemy models.
+
+## Core Endpoints
 
 - `POST /auth/hospital/signup`
 - `POST /auth/hospital/login`
 - `POST /auth/ambulance/signup`
 - `POST /auth/ambulance/login`
 - `GET /public/hospitals`
+- `GET /hospital/me`
 - `POST /hospital/update-icu`
+- `POST /hospital/update-location`
 - `GET /hospital/alerts`
+- `GET /ambulance/me`
+- `POST /ambulance/update-location`
 - `POST /ambulance/request`
 - `GET /ambulance/recommend-hospital`
+- `POST /ambulance/book-icu`
 - `POST /alerts`
+- `PUT /alerts/{alert_id}/status`

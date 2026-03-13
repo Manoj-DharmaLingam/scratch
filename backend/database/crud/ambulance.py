@@ -11,6 +11,14 @@ def get_ambulance_by_user(db: Session, user: User) -> Ambulance:
     return ambulance
 
 
+def update_ambulance_location(db: Session, ambulance: Ambulance, latitude: float, longitude: float) -> Ambulance:
+    ambulance.latitude = latitude
+    ambulance.longitude = longitude
+    db.commit()
+    db.refresh(ambulance)
+    return ambulance
+
+
 def create_ambulance_request(
     db: Session,
     ambulance: Ambulance,

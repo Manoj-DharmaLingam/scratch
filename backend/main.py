@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 from core.config import settings
 from core.database import engine
@@ -25,9 +26,36 @@ app.add_middleware(
 )
 
 
+def ensure_legacy_schema_columns() -> None:
+    inspector = inspect(engine)
+
+    schema_updates: dict[str, list[str]] = {
+        "ambulances": [
+            "ALTER TABLE ambulances ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION",
+            "ALTER TABLE ambulances ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION",
+        ],
+        "hospitals": [
+            "ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS available_icu_beds INTEGER NOT NULL DEFAULT 0",
+            "ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE",
+        ],
+    }
+
+    with engine.begin() as connection:
+        existing_tables = set(inspector.get_table_names())
+        for table_name, statements in schema_updates.items():
+            if table_name not in existing_tables:
+                continue
+            existing_columns = {column["name"] for column in inspector.get_columns(table_name)}
+            for statement in statements:
+                column_name = statement.split("ADD COLUMN IF NOT EXISTS ", 1)[1].split(" ", 1)[0]
+                if column_name not in existing_columns:
+                    connection.execute(text(statement))
+
+
 @app.on_event("startup")
 def startup() -> None:
     Base.metadata.create_all(bind=engine)
+    ensure_legacy_schema_columns()
 
 
 app.include_router(auth_router)

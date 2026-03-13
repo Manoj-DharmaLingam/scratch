@@ -8,6 +8,7 @@ from database.schemas.auth import (
 from database.schemas.hospital import (
     HospitalAlertsQueryResponse,
     HospitalDashboardResponse,
+    HospitalLocationUpdate,
     HospitalPublicResponse,
     ICUUpdateRequest,
 )
@@ -15,9 +16,10 @@ from database.schemas.ambulance import (
     AmbulanceProfileResponse,
     AmbulanceRequestCreate,
     AmbulanceRequestResponse,
+    AmbulanceLocationUpdate,
 )
 from database.schemas.routing import HospitalRecommendationResponse
-from database.schemas.alert import AlertCreateRequest, AlertCreateResponse, AlertStatusUpdateRequest
+from database.schemas.alert import AlertCreateRequest, AlertCreateResponse, AlertStatusUpdateRequest, IcuBookingRequest
 
 __all__ = [
     "AuthTokenResponse",
@@ -27,13 +29,16 @@ __all__ = [
     "HospitalSignupRequest",
     "HospitalAlertsQueryResponse",
     "HospitalDashboardResponse",
+    "HospitalLocationUpdate",
     "HospitalPublicResponse",
     "ICUUpdateRequest",
     "AmbulanceProfileResponse",
     "AmbulanceRequestCreate",
     "AmbulanceRequestResponse",
+    "AmbulanceLocationUpdate",
     "HospitalRecommendationResponse",
     "AlertCreateRequest",
     "AlertCreateResponse",
     "AlertStatusUpdateRequest",
+    "IcuBookingRequest",
 ]

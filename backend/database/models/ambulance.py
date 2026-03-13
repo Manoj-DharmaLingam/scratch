@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import relationship
 
 from database.models.base import Base
@@ -13,6 +13,8 @@ class Ambulance(Base):
     driver_name = Column(String(255), nullable=False)
     driver_phone = Column(String(32), nullable=False)
     ambulance_registration_number = Column(String(64), nullable=False, unique=True)
+    latitude = Column(Float, nullable=True, default=None)
+    longitude = Column(Float, nullable=True, default=None)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     user = relationship("User", back_populates="ambulance")

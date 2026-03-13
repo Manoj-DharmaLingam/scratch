@@ -29,7 +29,7 @@ export default function HospitalCard({ hospital, isRecommended, isSelected, onSe
       <div className="hospital-card__header">
         <span className="hospital-card__name">{hospital_name}</span>
         {isRecommended
-          ? <span className="badge badge-recommended">Best Match</span>
+          ? <span className="badge badge-recommended">Nearest</span>
           : <span className="badge badge-fallback">Option</span>
         }
       </div>
@@ -60,7 +60,7 @@ export default function HospitalCard({ hospital, isRecommended, isSelected, onSe
         </div>
       </div>
 
-      {/* Score bar */}
+      {/* Distance confidence bar */}
       <div className="score-bar">
         <div className="score-bar__fill" style={{ width: `${scorePercent}%` }} />
       </div>

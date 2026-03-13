@@ -25,6 +25,11 @@ class ICUUpdateRequest(BaseModel):
     count: int = Field(default=1, ge=0)
 
 
+class HospitalLocationUpdate(BaseModel):
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+
+
 class HospitalAlertsQueryResponse(BaseModel):
     id: int
     ambulance_request_id: int

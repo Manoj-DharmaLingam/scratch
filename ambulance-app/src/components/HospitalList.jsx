@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { fetchRecommendedHospitals } from '../services/api';
 import HospitalCard from './HospitalCard';
 import { RefreshCw, Building2 } from 'lucide-react';
-
-const POLL_INTERVAL = 5000;
 
 function SkeletonCard() {
   return (
@@ -24,26 +22,28 @@ function SkeletonCard() {
 export default function HospitalList({ lat, lng, severity, requiredSpecialty, onSelect, selectedHospital, onHospitalsLoaded }) {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading]     = useState(true);
+  const [error, setError] = useState('');
   const [lastRefresh, setLastRefresh] = useState(null);
-  const intervalRef = useRef(null);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     if (!lat || !lng) return;
+    setLoading(true);
     try {
       const data = await fetchRecommendedHospitals(lat, lng, severity, requiredSpecialty);
-      const sorted = [...data].sort((a, b) => b.score - a.score);
-      setHospitals(sorted);
+      setHospitals(data);
+      setError('');
       setLastRefresh(new Date());
-      if (onHospitalsLoaded) onHospitalsLoaded(sorted);
-    } catch { /* errors handled in api.js */ }
+      if (onHospitalsLoaded) onHospitalsLoaded(data);
+    } catch (err) {
+      setHospitals([]);
+      setError(err.message || 'Unable to load hospital recommendations.');
+    }
     finally { setLoading(false); }
-  };
+  }, [lat, lng, severity, requiredSpecialty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     load();
-    intervalRef.current = setInterval(load, POLL_INTERVAL);
-    return () => clearInterval(intervalRef.current);
-  }, []); // eslint-disable-line
+  }, [load]);
 
   const refreshLabel = lastRefresh
     ? `Updated ${lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
@@ -56,14 +56,20 @@ export default function HospitalList({ lat, lng, severity, requiredSpecialty, on
           <Building2 size={16} color="var(--purple-accent)" />
           Nearby Hospitals
         </span>
-        <span className="hospital-list__refresh">
-          <RefreshCw size={10} /> {refreshLabel}
-        </span>
+        <button className="btn btn-ghost" type="button" onClick={load} style={{ width: 'auto', fontSize: '0.78rem', padding: '0.45rem 0.75rem' }}>
+          <RefreshCw size={12} /> {refreshLabel}
+        </button>
       </div>
 
       <div className="hospital-list__scroll">
         {loading ? (
           <><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
+        ) : error ? (
+          <div className="empty-state">
+            <div className="empty-state__icon"><Building2 size={26} color="var(--text-muted)" /></div>
+            <span className="empty-state__title">Recommendations unavailable</span>
+            <span className="empty-state__desc">{error}</span>
+          </div>
         ) : hospitals.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state__icon"><Building2 size={26} color="var(--text-muted)" /></div>

@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     GOOGLE_MAPS_API_KEY: str = ""
     ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:5174,http://localhost:3000"
     RESERVATION_TTL_MINUTES: int = 15
+    GOOGLE_MAPS_TIMEOUT: int = 5
+    AMBULANCE_AVERAGE_SPEED_KMH: float = 45.0
+    API_MAX_RETRIES: int = 1
+    API_RETRY_DELAY_MS: int = 200
+    MAX_REASONABLE_DISTANCE_KM: float = 30.0
+    OPTIMAL_ICU_BEDS: int = 3
 
     class Config:
         env_file = ".env"

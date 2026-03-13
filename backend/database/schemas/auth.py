@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
 
 
 class HospitalSignupRequest(BaseModel):
@@ -25,6 +26,8 @@ class AmbulanceSignupRequest(BaseModel):
     ambulance_registration_number: str
     email: EmailStr
     password: str = Field(min_length=6)
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class AmbulanceLoginRequest(BaseModel):

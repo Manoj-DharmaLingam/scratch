@@ -45,6 +45,8 @@ def create_ambulance_user(db: Session, payload: AmbulanceSignupRequest) -> Ambul
         driver_name=payload.driver_name,
         driver_phone=payload.driver_phone,
         ambulance_registration_number=payload.ambulance_registration_number,
+        latitude=payload.latitude,
+        longitude=payload.longitude,
     )
     db.add(ambulance)
     db.commit()

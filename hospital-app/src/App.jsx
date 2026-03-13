@@ -25,6 +25,7 @@ import {
   hospitalSignup,
   updateAlertStatus,
   updateHospitalIcu,
+  updateHospitalLocation,
 } from './services/api';
 
 const POLL_INTERVAL = 5000;
@@ -222,11 +223,13 @@ const BED_ACTIONS = [
   { mode: 'set',     label: 'Set Available',  cls: 'bact-secondary' },
 ];
 
-function StatCard({ Icon, val, lbl, mod }) {
+function StatCard({ icon, val, lbl, mod }) {
+  const IconComponent = icon;
+
   return (
     <div className={`sc ${mod}`}>
       <span className="sc-icon">
-        <Icon size={22} strokeWidth={1.8} />
+        <IconComponent size={22} strokeWidth={1.8} />
       </span>
       <div>
         <div className="sc-val">{val}</div>
@@ -236,18 +239,19 @@ function StatCard({ Icon, val, lbl, mod }) {
   );
 }
 
-function HospitalDashboard() {
+function HospitalDashboard({ onUnauthorized }) {
   const [hospital, setHospital] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [count, setCount] = useState(1);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState('');
+  const [locEdit, setLocEdit] = useState({ lat: '', lng: '', busy: false, locating: false });
 
   // ── ETA Alarm state ──────────────────────────────────────────────────────────
   const [criticalAlerts, setCriticalAlerts] = useState([]);
   const [alarmActive, setAlarmActive] = useState(false);
-  const silencedRef = useRef(new Set());   // IDs of alerts the user has silenced
+  const silencedAlertIdsRef = useRef(new Set());
   const audioCtxRef = useRef(null);
   const beepTimerRef = useRef(null);
 
@@ -308,7 +312,8 @@ function HospitalDashboard() {
   }
 
   const silenceAlarm = () => {
-    criticalAlerts.forEach(a => silencedRef.current.add(a.id));
+    criticalAlerts.forEach((alert) => silencedAlertIdsRef.current.add(alert.id));
+    setCriticalAlerts([]);
     setAlarmActive(false);
     stopBeep();
   };
@@ -321,12 +326,20 @@ function HospitalDashboard() {
       setAlerts(incoming);
 
       // Detect active alerts with ETA < 5 minutes
-      const newCritical = incoming.filter(
+      const activeCritical = incoming.filter(
         a => (a.status === 'reserved' || a.status === 'acknowledged') && a.eta < 5,
       );
-      setCriticalAlerts(newCritical);
-      const hasUnseen = newCritical.some(a => !silencedRef.current.has(a.id));
-      if (hasUnseen) {
+      const activeCriticalIds = new Set(activeCritical.map((alert) => alert.id));
+      silencedAlertIdsRef.current = new Set(
+        [...silencedAlertIdsRef.current].filter((id) => activeCriticalIds.has(id)),
+      );
+
+      const unsilencedCritical = activeCritical.filter(
+        (alert) => !silencedAlertIdsRef.current.has(alert.id),
+      );
+
+      setCriticalAlerts(unsilencedCritical);
+      if (unsilencedCritical.length > 0) {
         setAlarmActive(true);
         startBeep();
       } else {
@@ -334,11 +347,12 @@ function HospitalDashboard() {
         stopBeep();
       }
     } catch (err) {
+      if (err.status === 401) { onUnauthorized?.(); return; }
       setError(err.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [onUnauthorized]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     refresh();
@@ -365,6 +379,29 @@ function HospitalDashboard() {
       refresh();
     } catch (err) {
       setError(err.message || 'Failed to update alert');
+    }
+  };
+
+  const detectGps = () => {
+    setLocEdit(p => ({ ...p, locating: true }));
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setLocEdit(p => ({ ...p, lat: String(pos.coords.latitude), lng: String(pos.coords.longitude), locating: false })),
+      () => setLocEdit(p => ({ ...p, locating: false })),
+    );
+  };
+
+  const saveLocation = async () => {
+    const lat = Number(locEdit.lat);
+    const lng = Number(locEdit.lng);
+    if (!locEdit.lat || !locEdit.lng || isNaN(lat) || isNaN(lng)) return;
+    setLocEdit(p => ({ ...p, busy: true }));
+    try {
+      const next = await updateHospitalLocation(lat, lng);
+      setHospital(next);
+    } catch (err) {
+      setError(err.message || 'Failed to update location');
+    } finally {
+      setLocEdit(p => ({ ...p, busy: false }));
     }
   };
 
@@ -443,10 +480,10 @@ function HospitalDashboard() {
 
           {/* Stat row */}
           <div className="stat-row">
-            <StatCard Icon={BedDouble}    val={hospital.total_icu_beds}     lbl="Total Beds"     mod=""          />
-            <StatCard Icon={CheckCircle2} val={hospital.available_icu_beds} lbl="Available"      mod="sc-success" />
-            <StatCard Icon={XCircle}      val={occupied}                    lbl="Occupied"       mod="sc-plum"   />
-            <StatCard Icon={Bell}         val={pending.length}              lbl="Pending Alerts" mod="sc-warn"   />
+            <StatCard icon={BedDouble}    val={hospital.total_icu_beds}     lbl="Total Beds"     mod=""           />
+            <StatCard icon={CheckCircle2} val={hospital.available_icu_beds} lbl="Available"      mod="sc-success" />
+            <StatCard icon={XCircle}      val={occupied}                    lbl="Occupied"       mod="sc-plum"    />
+            <StatCard icon={Bell}         val={pending.length}              lbl="Pending Alerts" mod="sc-warn"    />
           </div>
 
           {/* Occupancy bar */}
@@ -491,6 +528,42 @@ function HospitalDashboard() {
                       : label}
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className="panel">
+            <h2 className="panel-title">Hospital Location</h2>
+            <p className="muted-text" style={{ marginBottom: 8, fontSize: '0.82rem' }}>
+              Current: {hospital.latitude.toFixed(6)}°N, {hospital.longitude.toFixed(6)}°E
+            </p>
+            <div className="bedmgmt">
+              <div style={{ display: 'flex', gap: 8, flex: 1 }}>
+                <input
+                  className="count-input"
+                  type="number"
+                  step="any"
+                  placeholder="Latitude"
+                  value={locEdit.lat}
+                  onChange={(e) => setLocEdit(p => ({ ...p, lat: e.target.value }))}
+                />
+                <input
+                  className="count-input"
+                  type="number"
+                  step="any"
+                  placeholder="Longitude"
+                  value={locEdit.lng}
+                  onChange={(e) => setLocEdit(p => ({ ...p, lng: e.target.value }))}
+                />
+              </div>
+              <div className="bedmgmt-actions">
+                <button className="bact bact-secondary" onClick={detectGps} disabled={locEdit.locating}>
+                  {locEdit.locating ? <Loader2 size={14} className="spin-icon" /> : <><Navigation size={14} /> GPS</>}
+                </button>
+                <button className="bact bact-primary" onClick={saveLocation} disabled={locEdit.busy || (!locEdit.lat && !locEdit.lng)}>
+                  {locEdit.busy ? <Loader2 size={14} className="spin-icon" /> : 'Save Location'}
+                </button>
               </div>
             </div>
           </div>
@@ -834,7 +907,7 @@ export default function App() {
         {viewMode === 'public'
           ? <PublicView />
           : authenticated
-            ? <HospitalDashboard />
+            ? <HospitalDashboard onUnauthorized={logout} />
             : <AuthView onAuthenticated={handleAuthenticated} />}
       </main>
     </div>

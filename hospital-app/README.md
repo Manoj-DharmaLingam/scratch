@@ -1,16 +1,35 @@
-# React + Vite
+# Hospital Operations App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Hospital-side React application for publishing ICU capacity, maintaining hospital coordinates, and responding to incoming ambulance alerts.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Public ICU availability board
+- Hospital signup and secure login
+- ICU bed inventory management
+- Live ambulance alert feed
+- Coordinate updates with browser GPS support
+- Audible warning for near-arrival critical ambulances
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Install dependencies with `npm install`
+2. Create an `.env` file from `.env.example`
+3. Set `VITE_API_BASE_URL`
+4. Start with `npm run dev`
 
-## Expanding the ESLint configuration
+## Key API Dependencies
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `POST /auth/hospital/signup`
+- `POST /auth/hospital/login`
+- `GET /public/hospitals`
+- `GET /hospital/me`
+- `POST /hospital/update-icu`
+- `POST /hospital/update-location`
+- `GET /hospital/alerts`
+- `PUT /alerts/{alert_id}/status`
+
+## Production Build
+
+- `npm run build`
+- `npm run lint`

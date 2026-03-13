@@ -54,16 +54,21 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
   const googleMapRef = useRef(null);
   const markersRef = useRef([]);
   const routeRendererRef = useRef(null);
+  const isMapsConfigured = Boolean(MAPS_API_KEY && MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY_HERE');
+  const configError = isMapsConfigured
+    ? null
+    : 'Google Maps API key not configured. Add VITE_GOOGLE_MAPS_API_KEY to your .env file.';
   const [mapError, setMapError] = useState(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(() => Boolean(window.google && window.google.maps));
 
   // Load Google Maps script once
   useEffect(() => {
-    if (!MAPS_API_KEY || MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
-      setMapError('Google Maps API key not configured. Add VITE_GOOGLE_MAPS_API_KEY to your .env file.');
+    if (!isMapsConfigured) {
       return;
     }
-    if (window.google && window.google.maps) { setMapLoaded(true); return; }
+    if (window.google && window.google.maps) {
+      return;
+    }
 
     const existing = document.getElementById('gmaps-script');
     if (existing) { existing.onload = () => setMapLoaded(true); return; }
@@ -76,7 +81,7 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
     script.onload = () => setMapLoaded(true);
     script.onerror = () => setMapError('Failed to load Google Maps. Check your API key and network.');
     document.head.appendChild(script);
-  }, []);
+  }, [isMapsConfigured]);
 
   // Initialise or update map
   useEffect(() => {
@@ -148,8 +153,16 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
 
   // Draw route to selected hospital
   useEffect(() => {
-    if (!mapLoaded || !googleMapRef.current || !selectedHospital || !ambulanceLat || !ambulanceLng) return;
+    if (!mapLoaded || !googleMapRef.current) return;
     const maps = window.google.maps;
+
+    if (!selectedHospital || !ambulanceLat || !ambulanceLng) {
+      if (routeRendererRef.current) {
+        routeRendererRef.current.setMap(null);
+        routeRendererRef.current = null;
+      }
+      return;
+    }
 
     if (!routeRendererRef.current) {
       routeRendererRef.current = new maps.DirectionsRenderer({
@@ -175,13 +188,13 @@ export default function MapView({ ambulanceLat, ambulanceLng, hospitals, selecte
   return (
     <div className="map-container" id="map-view">
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
-      {mapError && (
+      {(configError || mapError) && (
         <div className="map-overlay">
           <AlertCircle size={32} color="var(--danger)" />
-          <span style={{ maxWidth: 340, textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-mid)' }}>{mapError}</span>
+          <span style={{ maxWidth: 340, textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-mid)' }}>{configError || mapError}</span>
         </div>
       )}
-      {!mapLoaded && !mapError && (
+      {!mapLoaded && !configError && !mapError && (
         <div className="map-overlay">
           <MapPin size={28} color="var(--purple-accent)" />
           <span className="spinner" />

@@ -17,3 +17,8 @@ class AlertCreateResponse(BaseModel):
     ambulance_request_id: int
     status: str
     eta: float
+
+
+class IcuBookingRequest(BaseModel):
+    hospital_id: int
+    ambulance_request_id: int

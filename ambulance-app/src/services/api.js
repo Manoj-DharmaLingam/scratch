@@ -8,8 +8,20 @@ function authHeaders() {
 async function fetchJson(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, options);
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `Request failed: ${response.status}`);
+    let message = `Request failed with ${response.status}`;
+    const contentType = response.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const payload = await response.json();
+      message = payload.detail || payload.message || JSON.stringify(payload);
+    } else {
+      const text = await response.text();
+      if (text) message = text;
+    }
+
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
   return response.json();
 }
@@ -55,5 +67,25 @@ export async function postAlert(payload) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(payload),
+  });
+}
+
+export async function bookIcu(hospitalId, ambulanceRequestId) {
+  return fetchJson('/ambulance/book-icu', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ hospital_id: hospitalId, ambulance_request_id: ambulanceRequestId }),
+  });
+}
+
+export async function getAmbulanceMe() {
+  return fetchJson('/ambulance/me', { headers: { ...authHeaders() } });
+}
+
+export async function updateAmbulanceLocation(latitude, longitude) {
+  return fetchJson('/ambulance/update-location', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ latitude, longitude }),
   });
 }

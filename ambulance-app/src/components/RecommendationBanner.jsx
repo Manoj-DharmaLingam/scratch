@@ -10,7 +10,7 @@ export default function RecommendationBanner({ hospital }) {
         <Navigation size={20} />
       </div>
       <div className="rec-banner__info">
-        <div className="rec-banner__label">Best Match — Navigate To</div>
+        <div className="rec-banner__label">Nearest Available Hospital</div>
         <div className="rec-banner__name">{hospital.hospital_name}</div>
         <div className="rec-banner__meta">
           <Clock size={11} />

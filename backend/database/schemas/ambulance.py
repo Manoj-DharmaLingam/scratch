@@ -11,6 +11,13 @@ class AmbulanceProfileResponse(BaseModel):
     driver_phone: str
     ambulance_registration_number: str
     email: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+
+class AmbulanceLocationUpdate(BaseModel):
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
 
 
 class AmbulanceRequestCreate(BaseModel):

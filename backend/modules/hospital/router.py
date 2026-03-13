@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from core.security import require_role
 from database import crud
-from database.schemas import HospitalAlertsQueryResponse, HospitalDashboardResponse, HospitalPublicResponse, ICUUpdateRequest
+from database.schemas import HospitalAlertsQueryResponse, HospitalDashboardResponse, HospitalLocationUpdate, HospitalPublicResponse, ICUUpdateRequest
 from modules.routing.service import invalidate_hospital_cache
 
 router = APIRouter(tags=["hospital"])
@@ -33,6 +33,18 @@ async def update_hospital_icu(
 ):
     hospital = crud.get_hospital_by_user(db, user)
     updated = crud.update_hospital_icu(db, hospital, payload.mode.lower(), payload.count)
+    invalidate_hospital_cache()
+    return HospitalDashboardResponse(**crud.hospital_to_dict(updated))
+
+
+@router.post("/hospital/update-location", response_model=HospitalDashboardResponse)
+async def update_hospital_location(
+    payload: HospitalLocationUpdate,
+    db: Session = Depends(get_db),
+    user=Depends(require_role("hospital")),
+):
+    hospital = crud.get_hospital_by_user(db, user)
+    updated = crud.update_hospital_location(db, hospital, payload.latitude, payload.longitude)
     invalidate_hospital_cache()
     return HospitalDashboardResponse(**crud.hospital_to_dict(updated))
 

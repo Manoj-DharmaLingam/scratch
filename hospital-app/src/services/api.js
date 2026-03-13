@@ -9,7 +9,9 @@ async function fetchJson(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, options);
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(text || `Request failed with ${response.status}`);
+    const err = new Error(text || `Request failed with ${response.status}`);
+    err.status = response.status;
+    throw err;
   }
   return response.json();
 }
@@ -48,6 +50,14 @@ export async function getHospitalAlerts() {
 
 export async function getPublicHospitals() {
   return fetchJson('/public/hospitals');
+}
+
+export async function updateHospitalLocation(latitude, longitude) {
+  return fetchJson('/hospital/update-location', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ latitude, longitude }),
+  });
 }
 
 export async function updateAlertStatus(alertId, status) {

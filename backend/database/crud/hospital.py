@@ -41,6 +41,14 @@ def update_hospital_icu(db: Session, hospital: Hospital, mode: str, count: int) 
     return hospital
 
 
+def update_hospital_location(db: Session, hospital: Hospital, latitude: float, longitude: float) -> Hospital:
+    hospital.latitude = latitude
+    hospital.longitude = longitude
+    db.commit()
+    db.refresh(hospital)
+    return hospital
+
+
 def list_public_hospitals(db: Session) -> list[Hospital]:
     cleanup_expired_reservations(db)
     return db.query(Hospital).filter(Hospital.is_active.is_(True)).order_by(Hospital.hospital_name.asc()).all()

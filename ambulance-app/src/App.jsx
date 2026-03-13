@@ -11,10 +11,27 @@ function AuthView({ onAuthenticated }) {
     ambulance_registration_number: '',
     email: '',
     password: '',
+    latitude: null,
+    longitude: null,
   });
   const [error, setError] = useState('');
+  const [locating, setLocating] = useState(false);
 
   const setField = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setField('latitude', pos.coords.latitude);
+        setField('longitude', pos.coords.longitude);
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
 
   const submit = async (event) => {
     event.preventDefault();
@@ -41,6 +58,34 @@ function AuthView({ onAuthenticated }) {
             <input className="form-control" placeholder="Driver Name" value={form.driver_name} onChange={(e) => setField('driver_name', e.target.value)} required />
             <input className="form-control" placeholder="Driver Phone" value={form.driver_phone} onChange={(e) => setField('driver_phone', e.target.value)} required />
             <input className="form-control" placeholder="Registration Number" value={form.ambulance_registration_number} onChange={(e) => setField('ambulance_registration_number', e.target.value)} required />
+
+            {/* Optional base location */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                className="form-control"
+                type="number"
+                step="any"
+                placeholder="Latitude (optional)"
+                value={form.latitude ?? ''}
+                onChange={(e) => setField('latitude', e.target.value ? Number(e.target.value) : null)}
+              />
+              <input
+                className="form-control"
+                type="number"
+                step="any"
+                placeholder="Longitude (optional)"
+                value={form.longitude ?? ''}
+                onChange={(e) => setField('longitude', e.target.value ? Number(e.target.value) : null)}
+              />
+              <button type="button" className="btn btn-ghost" style={{ whiteSpace: 'nowrap', width: 'auto' }} onClick={detectLocation} disabled={locating}>
+                {locating ? '…' : '📍 GPS'}
+              </button>
+            </div>
+            {form.latitude != null && (
+              <div style={{ fontSize: '0.78rem', color: '#6b7280' }}>
+                Location saved: {Number(form.latitude).toFixed(5)}°N, {Number(form.longitude).toFixed(5)}°E
+              </div>
+            )}
           </>
         )}
         <input className="form-control" placeholder="Email" type="email" value={form.email} onChange={(e) => setField('email', e.target.value)} required />
