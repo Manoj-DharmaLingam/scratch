@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from core.config import settings
 from database.crud.common import cleanup_expired_reservations, parse_specialties
 from database.models import Alert, Hospital, User
-from database.schemas.hospital import HospitalAlertsQueryResponse
+from database.models.doctor import Doctor
+from database.schemas.hospital import DoctorCreate, DoctorUpdate, HospitalAlertsQueryResponse
 
 
 def get_hospital_by_user(db: Session, user: User) -> Hospital:
@@ -100,3 +101,50 @@ def hospital_to_dict(hospital: Hospital) -> dict:
         "email": hospital.user.email,
         "created_at": hospital.created_at,
     }
+
+
+# ─── Doctor CRUD ──────────────────────────────────────────────────────────────
+
+
+def list_hospital_doctors(db: Session, hospital: Hospital) -> list[Doctor]:
+    return db.query(Doctor).filter(Doctor.hospital_id == hospital.id).order_by(Doctor.created_at.asc()).all()
+
+
+def list_public_doctors(db: Session, hospital_id: int) -> list[Doctor]:
+    return db.query(Doctor).filter(Doctor.hospital_id == hospital_id).order_by(Doctor.created_at.asc()).all()
+
+
+def get_doctor_by_id(db: Session, doctor_id: int, hospital: Hospital) -> Doctor:
+    doctor = db.query(Doctor).filter(Doctor.id == doctor_id, Doctor.hospital_id == hospital.id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    return doctor
+
+
+def create_doctor(db: Session, hospital: Hospital, data: DoctorCreate) -> Doctor:
+    doctor = Doctor(
+        hospital_id=hospital.id,
+        name=data.name,
+        specialty=data.specialty,
+        qualification=data.qualification,
+        experience_years=data.experience_years,
+        availability=data.availability,
+        is_available=data.is_available,
+    )
+    db.add(doctor)
+    db.commit()
+    db.refresh(doctor)
+    return doctor
+
+
+def update_doctor(db: Session, doctor: Doctor, data: DoctorUpdate) -> Doctor:
+    for field, value in data.model_dump(exclude_none=True).items():
+        setattr(doctor, field, value)
+    db.commit()
+    db.refresh(doctor)
+    return doctor
+
+
+def delete_doctor(db: Session, doctor: Doctor) -> None:
+    db.delete(doctor)
+    db.commit()

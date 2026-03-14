@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigation, Bed, Clock } from 'lucide-react';
+import { Navigation, Bed, Clock, Star } from 'lucide-react';
 
 export default function RecommendationBanner({ hospital }) {
   if (!hospital) return null;
@@ -10,11 +10,14 @@ export default function RecommendationBanner({ hospital }) {
         <Navigation size={20} />
       </div>
       <div className="rec-banner__info">
-        <div className="rec-banner__label">Nearest Available Hospital</div>
+        <div className="rec-banner__label">
+          <Star size={10} style={{ marginRight: 4 }} />
+          Best Match Hospital
+        </div>
         <div className="rec-banner__name">{hospital.hospital_name}</div>
         <div className="rec-banner__meta">
           <Clock size={11} />
-          {Math.round(hospital.eta_minutes)} mins
+          {Math.round(hospital.eta_minutes)} min
           <span className="meta-sep">·</span>
           <Bed size={11} />
           {hospital.available_icu_beds} ICU bed{hospital.available_icu_beds !== 1 ? 's' : ''}

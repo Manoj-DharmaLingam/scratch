@@ -108,6 +108,7 @@ export default function PatientForm({ onSubmit, loading, locationReady }) {
         )}
       </div>
 
+      {/* Required Specialty */}
       <div className="form-group">
         <label className="form-label">Required Specialty (optional)</label>
         <input

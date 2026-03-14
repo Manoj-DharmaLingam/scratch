@@ -6,25 +6,19 @@ import HospitalList from '../components/HospitalList';
 import RecommendationBanner from '../components/RecommendationBanner';
 import MapView from '../components/MapView';
 import {
-  Ambulance,
-  MapPin,
-  RefreshCw,
-  WifiOff,
-  CheckCircle2,
-  AlertCircle,
-  Info,
-  HeartPulse,
+  Ambulance, MapPin, RefreshCw, WifiOff,
+  CheckCircle2, AlertCircle, Info, HeartPulse,
 } from 'lucide-react';
 
-/* ─── Toast component ─────────────────────────────────────────── */
+/* ─── Toast ────────────────────────────────────────────────────── */
 function Toast({ toasts }) {
   return (
     <div className="toast-container">
       {toasts.map(t => (
         <div key={t.id} className={`toast ${t.type}`}>
-          {t.type === 'success' && <CheckCircle2 size={15} />}
-          {t.type === 'error'   && <AlertCircle  size={15} />}
-          {t.type === 'info'    && <Info          size={15} />}
+          {t.type === 'success' && <CheckCircle2 size={15}/>}
+          {t.type === 'error'   && <AlertCircle  size={15}/>}
+          {t.type === 'info'    && <Info          size={15}/>}
           {t.message}
         </div>
       ))}
@@ -39,19 +33,19 @@ export default function Dashboard({ onLogout }) {
   const [manualLat, setManualLat] = useState('');
   const [manualLng, setManualLng] = useState('');
 
-  const [patientData, setPatientData]       = useState(null);
-  const [formLoading, setFormLoading]       = useState(false);
-  const [showHospitals, setShowHospitals]   = useState(false);
-  const [selectedHospital, setSelectedHospital] = useState(null);
-  const [topHospital, setTopHospital]       = useState(null);
-  const [toasts, setToasts]                 = useState([]);
-  const [alertSent, setAlertSent]           = useState(false);
-  const [ambulanceReqId, setAmbulanceReqId] = useState(null);
-  const [submissionError, setSubmissionError] = useState('');
+  const [patientData,       setPatientData]       = useState(null);
+  const [formLoading,       setFormLoading]       = useState(false);
+  const [showHospitals,     setShowHospitals]     = useState(false);
+  const [selectedHospital,  setSelectedHospital]  = useState(null);
+  const [topHospital,       setTopHospital]       = useState(null);
+  const [toasts,            setToasts]            = useState([]);
+  const [alertSent,         setAlertSent]         = useState(false);
+  const [ambulanceReqId,    setAmbulanceReqId]    = useState(null);
+  const [submissionError,   setSubmissionError]   = useState('');
 
-  // Use GPS if available, fall back to manual entry
-  const effectiveLat = lat !== null ? lat : (manualLat !== '' ? Number(manualLat) : null);
-  const effectiveLng = lng !== null ? lng : (manualLng !== '' ? Number(manualLng) : null);
+  // GPS → manual fallback
+  const effectiveLat  = lat !== null ? lat : (manualLat !== '' ? Number(manualLat) : null);
+  const effectiveLng  = lng !== null ? lng : (manualLng !== '' ? Number(manualLng) : null);
   const locationReady = !!effectiveLat && !!effectiveLng && !isNaN(effectiveLat) && !isNaN(effectiveLng);
   const usingManual   = lat === null && locationReady;
 
@@ -61,15 +55,15 @@ export default function Dashboard({ onLogout }) {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), duration);
   }, []);
 
-  // On mount: load saved location from ambulance profile in DB
+  // Load saved ambulance location on mount
   useEffect(() => {
     getAmbulanceMe().then(profile => {
-      if (profile.latitude != null) setManualLat(String(profile.latitude));
+      if (profile.latitude  != null) setManualLat(String(profile.latitude));
       if (profile.longitude != null) setManualLng(String(profile.longitude));
-    }).catch(() => {}); // non-critical
+    }).catch(() => {});
   }, []);
 
-  // When GPS gets a fix: silently persist it to DB so next session it's pre-loaded
+  // Persist GPS fix to DB for next session
   useEffect(() => {
     if (lat !== null && lng !== null) {
       updateAmbulanceLocation(lat, lng).catch(() => {});
@@ -87,7 +81,7 @@ export default function Dashboard({ onLogout }) {
     try {
       const res = await postAmbulanceRequest({ latitude: effectiveLat, longitude: effectiveLng, ...formData });
       if (res?.id) setAmbulanceReqId(res.id);
-      showToast('Ambulance request registered. Finding hospitals…', 'info');
+      showToast('Request registered — finding nearest hospitals…', 'info');
       setShowHospitals(true);
     } catch (err) {
       setSubmissionError(err.message || 'Unable to register the ambulance request.');
@@ -106,23 +100,21 @@ export default function Dashboard({ onLogout }) {
     setSelectedHospital(hospital);
     try {
       await postAlert({
-        hospital_id: hospital.hospital_id,
+        hospital_id:          hospital.hospital_id,
         ambulance_request_id: ambulanceReqId,
-        eta: hospital.eta_minutes || 0,
+        eta:                  hospital.eta_minutes || 0,
       });
-
       const isCritical = patientData?.severity_level?.toLowerCase() === 'critical';
       if (isCritical && ambulanceReqId) {
         try {
           await bookIcu(hospital.hospital_id, ambulanceReqId);
-          showToast(`ICU bed confirmed & auto-booked at ${hospital.hospital_name} for critical patient`, 'success', 6000);
+          showToast(`ICU auto-booked at ${hospital.hospital_name} for critical patient`, 'success', 6000);
         } catch {
           showToast(`Alert sent to ${hospital.hospital_name} — ICU reservation active`, 'success', 5000);
         }
       } else {
         showToast(`Alert sent to ${hospital.hospital_name}`, 'success', 5000);
       }
-
       setAlertSent(true);
     } catch (err) {
       showToast(err.message || 'Unable to send the hospital alert.', 'error');
@@ -134,17 +126,17 @@ export default function Dashboard({ onLogout }) {
 
       {/* Announcement bar */}
       <div className="announcement-bar">
-        Emergency Routing System &nbsp;&middot;&nbsp; Real-Time ICU Bed Availability &nbsp;&middot;&nbsp; Active 24/7
+        MediCore Emergency Routing &nbsp;·&nbsp; Real-Time ICU Bed Availability &nbsp;·&nbsp; Active 24/7
       </div>
 
       {/* Header */}
       <header className="header">
         <div className="header__brand">
           <div className="header__logo-icon">
-            <Ambulance size={21} color="#fff" />
+            <Ambulance size={20} color="#fff"/>
           </div>
           <div>
-            <div className="header__title">ICU Connect</div>
+            <div className="header__title">MediCore</div>
             <div className="header__subtitle">Ambulance · Emergency Routing</div>
           </div>
         </div>
@@ -152,18 +144,19 @@ export default function Dashboard({ onLogout }) {
         {/* GPS status pill */}
         <div className="header__status">
           {locLoading && (
-            <><span className="spinner" style={{ width: 8, height: 8, borderWidth: 1.5 }} /> Locating…</>
+            <><span className="spinner" style={{width:8,height:8,borderWidth:1.5}}/> Locating…</>
           )}
           {!locLoading && lat !== null && (
-            <><span className="status-dot" /> GPS Active</>
+            <><span className="status-dot"/> GPS Active</>
           )}
           {!locLoading && locError && usingManual && (
-            <><span className="status-dot" style={{ background: 'var(--warning)' }} /> Manual Location</>
+            <><span className="status-dot" style={{background:'var(--warning)'}}/> Manual Location</>
           )}
           {!locLoading && locError && !usingManual && (
-            <><span className="status-dot danger" /> Location Error</>
+            <><span className="status-dot danger"/> Location Error</>
           )}
         </div>
+
         <button className="btn btn-ghost" onClick={onLogout}>Logout</button>
       </header>
 
@@ -172,7 +165,7 @@ export default function Dashboard({ onLogout }) {
         <div className="hero-strip__content">
           <span className="hero-strip__badge">Emergency Mode</span>
           <h1 className="hero-strip__heading">Find the Nearest ICU Hospital</h1>
-          <p className="hero-strip__sub">Real-time ICU bed tracking — find and route to the closest available hospital instantly</p>
+          <p className="hero-strip__sub">Real-time ICU tracking — route to the closest available hospital instantly</p>
         </div>
       </div>
 
@@ -185,13 +178,13 @@ export default function Dashboard({ onLogout }) {
           {/* Location card */}
           <div className="card location-card">
             <div className="location-icon">
-              <MapPin size={18} />
+              <MapPin size={18}/>
             </div>
-            <div className="location-info" style={{ flex: 1 }}>
+            <div className="location-info" style={{flex:1}}>
               <div className="location-label">Ambulance Location</div>
               {locLoading && (
                 <div className="location-coords">
-                  <span className="spinner" style={{ width: 10, height: 10, borderWidth: 1.5 }} /> Detecting…
+                  <span className="spinner" style={{width:10,height:10,borderWidth:1.5}}/> Detecting…
                 </div>
               )}
               {!locLoading && lat !== null && (
@@ -199,65 +192,56 @@ export default function Dashboard({ onLogout }) {
               )}
               {!locLoading && locError && (
                 <>
-                  <div className="location-error" style={{ marginBottom: 8 }}>{locError}</div>
-                  <div style={{ display: 'flex', gap: 6 }}>
+                  <div className="location-error" style={{marginBottom:8}}>{locError}</div>
+                  <div style={{display:'flex',gap:6}}>
                     <input
-                      className="form-control"
-                      type="number"
-                      step="any"
-                      placeholder="Latitude"
-                      value={manualLat}
-                      onChange={e => setManualLat(e.target.value)}
-                      style={{ fontSize: '0.78rem', padding: '5px 8px' }}
+                      className="form-control" type="number" step="any" placeholder="Latitude"
+                      value={manualLat} onChange={e => setManualLat(e.target.value)}
+                      style={{fontSize:'.78rem',padding:'5px 8px'}}
                     />
                     <input
-                      className="form-control"
-                      type="number"
-                      step="any"
-                      placeholder="Longitude"
-                      value={manualLng}
-                      onChange={e => setManualLng(e.target.value)}
-                      style={{ fontSize: '0.78rem', padding: '5px 8px' }}
+                      className="form-control" type="number" step="any" placeholder="Longitude"
+                      value={manualLng} onChange={e => setManualLng(e.target.value)}
+                      style={{fontSize:'.78rem',padding:'5px 8px'}}
                     />
                   </div>
                 </>
               )}
             </div>
             {!locLoading && locError && (
-              <button className="btn-ghost btn" style={{ width: 'auto', fontSize: '0.75rem', alignSelf: 'flex-start' }} onClick={refetch}>
-                <RefreshCw size={12} /> Retry GPS
+              <button
+                className="btn-ghost btn" style={{width:'auto',fontSize:'.75rem',alignSelf:'flex-start'}}
+                onClick={refetch}
+              >
+                <RefreshCw size={12}/> Retry GPS
               </button>
             )}
           </div>
 
-          {/* Backend offline notice */}
+          {/* Offline notice */}
           {!locLoading && !locError && lat === null && (
             <div className="error-banner">
-              <WifiOff size={14} /> Location unavailable — please allow location access.
+              <WifiOff size={14}/> Location unavailable — please allow location access.
             </div>
           )}
 
           {/* Patient form */}
           <div className="card">
             {submissionError && (
-              <div className="error-banner" style={{ marginBottom: '1rem' }}>
-                <AlertCircle size={14} /> {submissionError}
+              <div className="error-banner" style={{margin:'1rem 1rem 0'}}>
+                <AlertCircle size={14}/> {submissionError}
               </div>
             )}
-            <PatientForm
-              onSubmit={handleFormSubmit}
-              loading={formLoading}
-              locationReady={locationReady}
-            />
+            <PatientForm onSubmit={handleFormSubmit} loading={formLoading} locationReady={locationReady}/>
           </div>
         </section>
 
-        {/* RIGHT — hospitals */}
+        {/* RIGHT — hospital results */}
         <section className="right-panel">
           {showHospitals ? (
             <>
-              <RecommendationBanner hospital={topHospital} />
-              <div className="card" style={{ padding: '1.25rem' }}>
+              <RecommendationBanner hospital={topHospital}/>
+              <div className="card" style={{padding:'1.3rem'}}>
                 <HospitalList
                   lat={effectiveLat}
                   lng={effectiveLng}
@@ -273,13 +257,13 @@ export default function Dashboard({ onLogout }) {
             <div className="card">
               <div className="empty-state">
                 <div className="empty-state__icon">
-                  <HeartPulse size={28} color="var(--text-muted)" />
+                  <HeartPulse size={30} color="var(--text-muted)"/>
                 </div>
                 <span className="empty-state__title">Ready to Find Hospitals</span>
                 <span className="empty-state__desc">
-                  Fill in the patient details on the left and press <strong>Find Best Hospital</strong> to create a live request and get the nearest hospitals ranked by distance.
+                  Fill in the patient details and press <strong>Find Best Hospital</strong> to get ranked hospitals by distance and ICU availability.
                 </span>
-                <div className="deco-line" />
+                <div className="deco-line"/>
               </div>
             </div>
           )}
@@ -289,7 +273,7 @@ export default function Dashboard({ onLogout }) {
       {/* Map */}
       <section className="map-section">
         <div className="map-section__label">
-          <MapPin size={13} color="var(--purple-accent)" />
+          <MapPin size={13} color="var(--primary)"/>
           {(selectedHospital ?? topHospital)
             ? `Route to ${(selectedHospital ?? topHospital).hospital_name}`
             : 'Route to Hospital'}
@@ -306,7 +290,7 @@ export default function Dashboard({ onLogout }) {
         />
       </section>
 
-      <Toast toasts={toasts} />
+      <Toast toasts={toasts}/>
     </div>
   );
 }

@@ -11,6 +11,9 @@ from database.schemas.hospital import (
     HospitalLocationUpdate,
     HospitalPublicResponse,
     ICUUpdateRequest,
+    DoctorCreate,
+    DoctorUpdate,
+    DoctorResponse,
 )
 from database.schemas.ambulance import (
     AmbulanceProfileResponse,
@@ -32,6 +35,9 @@ __all__ = [
     "HospitalLocationUpdate",
     "HospitalPublicResponse",
     "ICUUpdateRequest",
+    "DoctorCreate",
+    "DoctorUpdate",
+    "DoctorResponse",
     "AmbulanceProfileResponse",
     "AmbulanceRequestCreate",
     "AmbulanceRequestResponse",

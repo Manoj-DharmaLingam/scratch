@@ -87,3 +87,34 @@ export async function updateAlertStatus(alertId, status) {
     data: { status },
   });
 }
+
+export async function getMyDoctors() {
+  return ajaxJson('/hospital/doctors', { headers: { ...authHeaders() } });
+}
+
+export async function createDoctor(data) {
+  return ajaxJson('/hospital/doctors', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    data,
+  });
+}
+
+export async function updateDoctor(id, data) {
+  return ajaxJson(`/hospital/doctors/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    data,
+  });
+}
+
+export async function deleteDoctor(id) {
+  return ajaxJson(`/hospital/doctors/${id}`, {
+    method: 'DELETE',
+    headers: { ...authHeaders() },
+  });
+}
+
+export async function getPublicDoctors(hospitalId) {
+  return ajaxJson(`/public/hospitals/${hospitalId}/doctors`);
+}

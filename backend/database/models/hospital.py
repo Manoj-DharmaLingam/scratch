@@ -22,3 +22,4 @@ class Hospital(Base):
 
     user = relationship("User", back_populates="hospital")
     alerts = relationship("Alert", back_populates="hospital")
+    doctors = relationship("Doctor", back_populates="hospital", cascade="all, delete-orphan")

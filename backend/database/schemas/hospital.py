@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -42,4 +43,34 @@ class HospitalAlertsQueryResponse(BaseModel):
     patient_condition_notes: str
     ambulance_latitude: float
     ambulance_longitude: float
+    created_at: datetime
+
+
+class DoctorCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=255)
+    specialty: str = Field(min_length=1, max_length=255)
+    qualification: str = Field(default="")
+    experience_years: int = Field(default=0, ge=0)
+    availability: str = Field(default="", max_length=255)
+    is_available: bool = Field(default=True)
+
+
+class DoctorUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1, max_length=255)
+    specialty: Optional[str] = Field(default=None, min_length=1, max_length=255)
+    qualification: Optional[str] = None
+    experience_years: Optional[int] = Field(default=None, ge=0)
+    availability: Optional[str] = Field(default=None, max_length=255)
+    is_available: Optional[bool] = None
+
+
+class DoctorResponse(BaseModel):
+    id: int
+    hospital_id: int
+    name: str
+    specialty: str
+    qualification: str
+    experience_years: int
+    availability: str
+    is_available: bool
     created_at: datetime
